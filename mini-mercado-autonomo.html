@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Levantamento de Custos — Mini Mercado Autônomo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #00c46a;
+    --verde-escuro: #009e56;
+    --verde-claro: #d4f5e5;
+    --laranja: #ff7c38;
+    --fundo: #0d1117;
+    --fundo2: #161b22;
+    --fundo3: #1c2330;
+    --borda: #2a3341;
+    --texto: #e6edf3;
+    --texto2: #8b949e;
+    --branco: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0d2818 0%, #0d1117 60%);
+    border-bottom: 1px solid var(--borda);
+    padding: 48px 32px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(0,196,106,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(255,124,56,0.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-tag {
+    display: inline-block;
+    background: rgba(0,196,106,0.15);
+    border: 1px solid rgba(0,196,106,0.35);
+    color: var(--verde);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  header h1 span { color: var(--verde); }
+  header p {
+    color: var(--texto2);
+    font-size: 15px;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  /* RESUMO TOPO */
+  .resumo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    padding: 28px 32px;
+  }
+  .resumo-card {
+    background: var(--fundo2);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: 20px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .resumo-card:hover { border-color: var(--verde); }
+  .resumo-card.destaque {
+    background: linear-gradient(135deg, rgba(0,196,106,0.12), rgba(0,158,86,0.06));
+    border-color: rgba(0,196,106,0.4);
+  }
+  .resumo-label {
+    font-size: 11px;
+    color: var(--texto2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .resumo-valor {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--branco);
+  }
+  .resumo-card.destaque .resumo-valor { color: var(--verde); }
+  .resumo-sub {
+    font-size: 12px;
+    color: var(--texto2);
+    margin-top: 4px;
+  }
+
+  /* SEÇÃO */
+  .secao {
+    padding: 8px 32px 0;
+  }
+  .secao-titulo {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--texto2);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .secao-titulo::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--borda);
+  }
+
+  /* TABELA DE CUSTOS */
+  .tabela {
+    background: var(--fundo2);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .tabela-header {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--fundo3);
+    border-bottom: 1px solid var(--borda);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto2);
+  }
+  .linha {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--borda);
+    transition: background .15s;
+  }
+  .linha:last-child { border-bottom: none; }
+  .linha:hover { background: rgba(255,255,255,0.03); }
+  .linha-nome {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--texto);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .linha-nome .icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .linha-desc {
+    font-size: 12px;
+    color: var(--texto2);
+    margin-top: 2px;
+  }
+  .linha-min, .linha-max {
+    text-align: right;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    white-space: nowrap;
+    min-width: 90px;
+  }
+  .linha-min { color: var(--verde); }
+  .linha-max { color: var(--laranja); }
+
+  /* TOTAL */
+  .total-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px;
+    background: var(--fundo3);
+    border-top: 2px solid var(--borda);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .total-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .total-valores {
+    display: flex;
+    gap: 24px;
+  }
+  .total-item { text-align: right; }
+  .total-item .tl { font-size: 11px; color: var(--texto2); margin-bottom: 2px; }
+  .total-item .tv {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .tv-min { color: var(--verde); }
+  .tv-max { color: var(--laranja); }
+
+  /* CUSTOS MENSAIS */
+  .mensais-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .mensal-card {
+    background: var(--fundo2);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color .2s;
+  }
+  .mensal-card:hover { border-color: rgba(0,196,106,0.4); }
+  .mensal-nome {
+    font-size: 13px;
+    color: var(--texto2);
+  }
+  .mensal-valor {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--branco);
+  }
+
+  /* BARRA DE PROPORÇÃO */
+  .proporcao-wrap { margin-bottom: 28px; }
+  .prop-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .prop-nome {
+    font-size: 13px;
+    color: var(--texto2);
+    min-width: 140px;
+  }
+  .prop-barra-bg {
+    flex: 1;
+    background: var(--fundo3);
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .prop-barra {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1.2s cubic-bezier(.4,0,.2,1);
+  }
+  .prop-pct {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* DICAS */
+  .dicas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .dica-card {
+    background: var(--fundo2);
+    border: 1px solid var(--borda);
+    border-left: 3px solid var(--verde);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .dica-titulo {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--verde);
+  }
+  .dica-texto {
+    font-size: 13px;
+    color: var(--texto2);
+    line-height: 1.5;
+  }
+
+  /* RODAPÉ */
+  .rodape {
+    margin: 32px 32px 0;
+    padding: 16px;
+    background: var(--fundo2);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--texto2);
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* LEGENDA */
+  .legenda {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--texto2);
+  }
+  .legenda-item { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  @media (max-width: 600px) {
+    header { padding: 32px 20px 28px; }
+    .resumo-grid { padding: 20px; gap: 8px; }
+    .secao { padding: 8px 20px 0; }
+    .tabela-header { display: none; }
+    .linha { grid-template-columns: 1fr; gap: 4px; }
+    .linha-min, .linha-max { text-align: left; }
+    .total-valores { gap: 16px; }
+    .dicas-grid { grid-template-columns: 1fr; }
+    .rodape { margin: 20px 20px 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-tag">Guia de Investimento 2026</div>
+  <h1>Mini Mercado<br><span>Autônomo</span></h1>
+  <p>Levantamento completo de custos para abertura de um mini mercado autônomo no Brasil — modelo sem funcionários, operação 24h.</p>
+</header>
+
+<!-- RESUMO -->
+<div class="resumo-grid">
+  <div class="resumo-card destaque">
+    <div class="resumo-label">Investimento Mínimo</div>
+    <div class="resumo-valor">R$ 30 mil</div>
+    <div class="resumo-sub">Modelo enxuto / básico</div>
+  </div>
+  <div class="resumo-card destaque">
+    <div class="resumo-label">Investimento Máximo</div>
+    <div class="resumo-valor">R$ 76 mil</div>
+    <div class="resumo-sub">Modelo completo / estruturado</div>
+  </div>
+  <div class="resumo-card">
+    <div class="resumo-label">Custo Mensal Médio</div>
+    <div class="resumo-valor">R$ 3–6 mil</div>
+    <div class="resumo-sub">Sem funcionários</div>
+  </div>
+  <div class="resumo-card">
+    <div class="resumo-label">Payback Estimado</div>
+    <div class="resumo-valor">7–18 meses</div>
+    <div class="resumo-sub">Depende da localização</div>
+  </div>
+  <div class="resumo-card">
+    <div class="resumo-label">Área Mínima</div>
+    <div class="resumo-valor">12–25 m²</div>
+    <div class="resumo-sub">Condomínio / empresa</div>
+  </div>
+</div>
+
+<!-- CUSTOS INICIAIS -->
+<div class="secao">
+  <div class="secao-titulo">Investimento Inicial — Detalhado</div>
+
+  <div class="legenda">
+    <div class="legenda-item"><div class="dot" style="background:var(--verde)"></div> Mínimo</div>
+    <div class="legenda-item"><div class="dot" style="background:var(--laranja)"></div> Máximo</div>
+  </div>
+
+  <!-- BLOCO 1: TECNOLOGIA & AUTOMAÇÃO -->
+  <div class="tabela">
+    <div class="tabela-header">
+      <span>🤖 Tecnologia & Automação</span>
+      <span>Mínimo</span>
+      <span>Máximo</span>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(0,196,106,0.15)">📷</div><div><span>Sistema de câmeras / CFTV</span><div class="linha-desc">2 a 6 câmeras HD com DVR</div></div></div>
+      </div>
+      <div class="linha-min">R$ 2.500</div>
+      <div class="linha-max">R$ 5.000</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(0,196,106,0.15)">🚪</div><div><span>Controle de acesso</span><div class="linha-desc">QR Code, biometria ou reconhecimento facial</div></div></div>
+      </div>
+      <div class="linha-min">R$ 900</div>
+      <div class="linha-max">R$ 3.500</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(0,196,106,0.15)">🖥️</div><div><span>Totem / PDV de autoatendimento</span><div class="linha-desc">Terminal com leitor de código de barras</div></div></div>
+      </div>
+      <div class="linha-min">R$ 3.500</div>
+      <div class="linha-max">R$ 8.000</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(0,196,106,0.15)">📱</div><div><span>Software de gestão</span><div class="linha-desc">Controle de estoque, vendas e relatórios</div></div></div>
+      </div>
+      <div class="linha-min">R$ 500</div>
+      <div class="linha-max">R$ 2.500</div>
+    </div>
+    <div class="total-box">
+      <span class="total-label">Subtotal Tecnologia</span>
+      <div class="total-valores">
+        <div class="total-item"><div class="tl">Mínimo</div><div class="tv tv-min">R$ 7.400</div></div>
+        <div class="total-item"><div class="tl">Máximo</div><div class="tv tv-max">R$ 19.000</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 2: ESTRUTURA FÍSICA -->
+  <div class="tabela">
+    <div class="tabela-header">
+      <span>🏗️ Estrutura Física & Equipamentos</span>
+      <span>Mínimo</span>
+      <span>Máximo</span>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(255,124,56,0.12)">🗄️</div><div><span>Prateleiras e gôndolas</span><div class="linha-desc">Módulos de aço para exposição de produtos</div></div></div>
+      </div>
+      <div class="linha-min">R$ 2.000</div>
+      <div class="linha-max">R$ 6.000</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(255,124,56,0.12)">❄️</div><div><span>Refrigerador / expositor frio</span><div class="linha-desc">Bebidas, laticínios e produtos refrigerados</div></div></div>
+      </div>
+      <div class="linha-min">R$ 2.500</div>
+      <div class="linha-max">R$ 7.000</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(255,124,56,0.12)">🎨</div><div><span>Reforma e layout do espaço</span><div class="linha-desc">Pintura, iluminação, piso, comunicação visual</div></div></div>
+      </div>
+      <div class="linha-min">R$ 2.000</div>
+      <div class="linha-max">R$ 8.000</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(255,124,56,0.12)">🔌</div><div><span>Instalações elétricas / rede</span><div class="linha-desc">Pontos elétricos, internet, cabeamento</div></div></div>
+      </div>
+      <div class="linha-min">R$ 800</div>
+      <div class="linha-max">R$ 2.500</div>
+    </div>
+    <div class="total-box">
+      <span class="total-label">Subtotal Estrutura</span>
+      <div class="total-valores">
+        <div class="total-item"><div class="tl">Mínimo</div><div class="tv tv-min">R$ 7.300</div></div>
+        <div class="total-item"><div class="tl">Máximo</div><div class="tv tv-max">R$ 23.500</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 3: REGULARIZAÇÃO -->
+  <div class="tabela">
+    <div class="tabela-header">
+      <span>📋 Regularização & Legal</span>
+      <span>Mínimo</span>
+      <span>Máximo</span>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(86,141,255,0.12)">🏢</div><div><span>Abertura de CNPJ (ME)</span><div class="linha-desc">Registro na Junta Comercial + taxas</div></div></div>
+      </div>
+      <div class="linha-min">R$ 100</div>
+      <div class="linha-max">R$ 500</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(86,141,255,0.12)">📄</div><div><span>Alvará de funcionamento</span><div class="linha-desc">Licença municipal de operação comercial</div></div></div>
+      </div>
+      <div class="linha-min">R$ 300</div>
+      <div class="linha-max">R$ 1.500</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(86,141,255,0.12)">🧪</div><div><span>Licença sanitária (Vigilância)</span><div class="linha-desc">ANVISA / Vigilância Sanitária municipal</div></div></div>
+      </div>
+      <div class="linha-min">R$ 300</div>
+      <div class="linha-max">R$ 1.500</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(86,141,255,0.12)">🔥</div><div><span>Vistoria do Corpo de Bombeiros</span><div class="linha-desc">AVCB ou certificado de conformidade</div></div></div>
+      </div>
+      <div class="linha-min">R$ 200</div>
+      <div class="linha-max">R$ 800</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(86,141,255,0.12)">💼</div><div><span>Contabilidade (abertura)</span><div class="linha-desc">Honorários do contador para abertura</div></div></div>
+      </div>
+      <div class="linha-min">R$ 300</div>
+      <div class="linha-max">R$ 1.000</div>
+    </div>
+    <div class="total-box">
+      <span class="total-label">Subtotal Legal</span>
+      <div class="total-valores">
+        <div class="total-item"><div class="tl">Mínimo</div><div class="tv tv-min">R$ 1.200</div></div>
+        <div class="total-item"><div class="tl">Máximo</div><div class="tv tv-max">R$ 5.300</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO 4: ESTOQUE & OPERAÇÃO -->
+  <div class="tabela">
+    <div class="tabela-header">
+      <span>🛒 Estoque Inicial & Marketing</span>
+      <span>Mínimo</span>
+      <span>Máximo</span>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(0,196,106,0.15)">🥤</div><div><span>Estoque inicial de produtos</span><div class="linha-desc">Bebidas, snacks, higiene, limpeza, alimentos</div></div></div>
+      </div>
+      <div class="linha-min">R$ 4.000</div>
+      <div class="linha-max">R$ 15.000</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(0,196,106,0.15)">📣</div><div><span>Marketing de inauguração</span><div class="linha-desc">Redes sociais, panfletos, faixas, Google</div></div></div>
+      </div>
+      <div class="linha-min">R$ 500</div>
+      <div class="linha-max">R$ 2.000</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(0,196,106,0.15)">💰</div><div><span>Capital de giro (3 meses)</span><div class="linha-desc">Reserva para manutenção até estabilizar</div></div></div>
+      </div>
+      <div class="linha-min">R$ 6.000</div>
+      <div class="linha-max">R$ 9.000</div>
+    </div>
+    <div class="linha">
+      <div>
+        <div class="linha-nome"><div class="icon" style="background:rgba(0,196,106,0.15)">🔒</div><div><span>Seguro do estabelecimento</span><div class="linha-desc">Cobertura contra roubo, incêndio e danos</div></div></div>
+      </div>
+      <div class="linha-min">R$ 500</div>
+      <div class="linha-max">R$ 1.500</div>
+    </div>
+    <div class="total-box">
+      <span class="total-label">Subtotal Estoque/Mktg</span>
+      <div class="total-valores">
+        <div class="total-item"><div class="tl">Mínimo</div><div class="tv tv-min">R$ 11.000</div></div>
+        <div class="total-item"><div class="tl">Máximo</div><div class="tv tv-max">R$ 27.500</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOTAL GERAL -->
+  <div class="tabela" style="margin-bottom:28px;">
+    <div class="total-box" style="padding: 24px 20px; background: linear-gradient(135deg, rgba(0,196,106,0.10), rgba(0,158,86,0.05));">
+      <div>
+        <div class="total-label" style="font-size:18px; color: var(--verde)">💼 INVESTIMENTO TOTAL</div>
+        <div style="font-size:13px; color:var(--texto2); margin-top:4px;">Todos os itens somados</div>
+      </div>
+      <div class="total-valores">
+        <div class="total-item">
+          <div class="tl">Cenário Mínimo</div>
+          <div class="tv tv-min" style="font-size:28px">R$ 26.900</div>
+          <div style="font-size:11px;color:var(--texto2)">≈ R$ 30 mil</div>
+        </div>
+        <div class="total-item">
+          <div class="tl">Cenário Máximo</div>
+          <div class="tv tv-max" style="font-size:28px">R$ 75.300</div>
+          <div style="font-size:11px;color:var(--texto2)">≈ R$ 76 mil</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPORÇÕES -->
+  <div class="secao-titulo">Composição do Investimento</div>
+  <div class="proporcao-wrap">
+    <div class="prop-item">
+      <div class="prop-nome">🤖 Tecnologia</div>
+      <div class="prop-barra-bg"><div class="prop-barra" style="width:29%; background: linear-gradient(90deg, #00c46a, #00e07a)"></div></div>
+      <div class="prop-pct" style="color:var(--verde)">~29%</div>
+    </div>
+    <div class="prop-item">
+      <div class="prop-nome">🏗️ Estrutura Física</div>
+      <div class="prop-barra-bg"><div class="prop-barra" style="width:34%; background: linear-gradient(90deg, #ff7c38, #ffaa70)"></div></div>
+      <div class="prop-pct" style="color:var(--laranja)">~34%</div>
+    </div>
+    <div class="prop-item">
+      <div class="prop-nome">🛒 Estoque & Mktg</div>
+      <div class="prop-barra-bg"><div class="prop-barra" style="width:30%; background: linear-gradient(90deg, #568dff, #80aaff)"></div></div>
+      <div class="prop-pct" style="color:#568dff">~30%</div>
+    </div>
+    <div class="prop-item">
+      <div class="prop-nome">📋 Legal</div>
+      <div class="prop-barra-bg"><div class="prop-barra" style="width:7%; background: linear-gradient(90deg, #aaa, #ccc)"></div></div>
+      <div class="prop-pct" style="color:var(--texto2)">~7%</div>
+    </div>
+  </div>
+
+  <!-- CUSTOS MENSAIS -->
+  <div class="secao-titulo">Custos Mensais Recorrentes</div>
+  <div class="mensais-grid">
+    <div class="mensal-card">
+      <div><div class="mensal-nome">☁️ Software / SaaS gestão</div></div>
+      <div class="mensal-valor">R$ 100–400</div>
+    </div>
+    <div class="mensal-card">
+      <div><div class="mensal-nome">🌐 Internet banda larga</div></div>
+      <div class="mensal-valor">R$ 100–200</div>
+    </div>
+    <div class="mensal-card">
+      <div><div class="mensal-nome">💡 Energia elétrica</div></div>
+      <div class="mensal-valor">R$ 200–600</div>
+    </div>
+    <div class="mensal-card">
+      <div><div class="mensal-nome">🔄 Reposição de estoque</div></div>
+      <div class="mensal-valor">R$ 2.000–4.000</div>
+    </div>
+    <div class="mensal-card">
+      <div><div class="mensal-nome">💼 Contabilidade mensal</div></div>
+      <div class="mensal-valor">R$ 150–400</div>
+    </div>
+    <div class="mensal-card">
+      <div><div class="mensal-nome">🏢 DAS (Simples/ME)</div></div>
+      <div class="mensal-valor">R$ 82–300</div>
+    </div>
+    <div class="mensal-card">
+      <div><div class="mensal-nome">🔧 Manutenção equipamentos</div></div>
+      <div class="mensal-valor">R$ 100–300</div>
+    </div>
+    <div class="mensal-card">
+      <div><div class="mensal-nome">📣 Marketing digital</div></div>
+      <div class="mensal-valor">R$ 200–500</div>
+    </div>
+  </div>
+
+  <!-- TOTAL MENSAL -->
+  <div class="tabela" style="margin-bottom:28px;">
+    <div class="total-box" style="background: var(--fundo3);">
+      <div>
+        <div class="total-label">Total Mensal Estimado</div>
+        <div style="font-size:12px;color:var(--texto2);margin-top:3px">Sem mão de obra — modelo autônomo</div>
+      </div>
+      <div class="total-valores">
+        <div class="total-item"><div class="tl">Mínimo</div><div class="tv tv-min">R$ 2.932</div></div>
+        <div class="total-item"><div class="tl">Máximo</div><div class="tv tv-max">R$ 6.700</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DICAS -->
+  <div class="secao-titulo">Pontos de Atenção</div>
+  <div class="dicas-grid">
+    <div class="dica-card">
+      <div class="dica-titulo">📍 Localização é tudo</div>
+      <div class="dica-texto">Condomínios residenciais, prédios comerciais e empresas com >100 pessoas são os melhores pontos. O volume de clientes define diretamente o retorno.</div>
+    </div>
+    <div class="dica-card">
+      <div class="dica-titulo">💰 Reserve capital de giro</div>
+      <div class="dica-texto">Especialistas recomendam ao menos 3 meses de despesas em caixa antes de abrir. Operações novas demoram 2–4 meses para estabilizar fluxo.</div>
+    </div>
+    <div class="dica-card">
+      <div class="dica-titulo">🏪 Franquia ou marca própria?</div>
+      <div class="dica-texto">Franquias custam R$ 27k–105k (inclui taxa de R$ 5k–40k pela marca). Marca própria é mais barata mas exige mais conhecimento de gestão.</div>
+    </div>
+    <div class="dica-card">
+      <div class="dica-titulo">🛒 Mix de produtos certo</div>
+      <div class="dica-texto">Bebidas, snacks, higiene e alimentos prontos têm maior giro. Foque nesses categorias para manter o fluxo de caixa saudável nos primeiros meses.</div>
+    </div>
+    <div class="dica-card">
+      <div class="dica-titulo">📋 Regularização obrigatória</div>
+      <div class="dica-texto">Em condomínios, a aprovação do síndico/assembleia é necessária. CNPJ, alvará e vigilância sanitária são indispensáveis para operar legalmente.</div>
+    </div>
+    <div class="dica-card">
+      <div class="dica-titulo">📈 Payback realista</div>
+      <div class="dica-texto">Com boa localização e ticket médio acima de R$ 25, o retorno acontece em 7–12 meses. Locais com menor fluxo podem levar até 18 meses.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="rodape">
+  ⚠️ Os valores apresentados são estimativas baseadas em dados de mercado de 2025–2026. Preços variam conforme região, fornecedores e porte da operação.<br>
+  Recomenda-se consultar fornecedores locais e um contador antes de tomar decisões de investimento.
+</div>
+
+</body>
+</html>

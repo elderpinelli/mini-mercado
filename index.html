@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hub — Mini Mercado Autônomo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0c09;
+    --bg2: #161410;
+    --bg3: #1e1b16;
+    --card: #181510;
+    --ouro: #c8a84b;
+    --ouro2: #e8c870;
+    --ouro-dim: rgba(200,168,75,0.12);
+    --ouro-borda: rgba(200,168,75,0.25);
+    --verde: #4a9e6e;
+    --verde-dim: rgba(74,158,110,0.12);
+    --texto: #e8e0d0;
+    --texto2: #8a7e6e;
+    --borda: rgba(255,255,255,0.07);
+    --sombra: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--texto);
+    font-family: 'Jost', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: .4;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    padding: 72px 40px 56px;
+    border-bottom: 1px solid var(--borda);
+    overflow: hidden;
+    z-index: 1;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -120px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,168,75,0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 28px;
+  }
+  .eyebrow-line { width: 32px; height: 1px; background: var(--ouro); opacity: .6; }
+  .eyebrow-text {
+    font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--ouro); opacity: .8;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+  .hero h1 .linha1 { color: var(--texto); }
+  .hero h1 .linha2 { color: var(--ouro); }
+  .hero-sub {
+    margin-top: 20px;
+    font-size: 15px;
+    color: var(--texto2);
+    max-width: 480px;
+    line-height: 1.7;
+  }
+  .hero-stats {
+    display: flex; gap: 32px; flex-wrap: wrap;
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--borda);
+  }
+  .hs-item { }
+  .hs-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 700;
+    color: var(--ouro2);
+  }
+  .hs-label { font-size: 11px; color: var(--texto2); margin-top: 2px; letter-spacing: .5px; }
+
+  /* GRID DOCS */
+  .wrap { padding: 48px 40px 0; position: relative; z-index: 1; }
+
+  .secao-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--texto2); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .secao-label::after { content: ''; flex: 1; height: 1px; background: var(--borda); }
+
+  .docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+
+  .doc-card {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ouro-dim);
+    opacity: 0;
+    transition: opacity .2s;
+    border-radius: 16px;
+  }
+  .doc-card:hover {
+    border-color: var(--ouro-borda);
+    transform: translateY(-4px);
+    box-shadow: var(--sombra);
+  }
+  .doc-card:hover::before { opacity: 1; }
+
+  .doc-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    position: relative;
+  }
+  .doc-emoji {
+    width: 48px; height: 48px;
+    background: var(--bg3);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .doc-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    position: absolute;
+    right: -4px; top: -8px;
+  }
+  .doc-info { position: relative; }
+  .doc-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--texto);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .doc-desc { font-size: 12px; color: var(--texto2); line-height: 1.6; }
+
+  .doc-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative;
+    padding-top: 14px;
+    border-top: 1px solid var(--borda);
+  }
+  .doc-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 10px; font-weight: 600; letter-spacing: .5px;
+    padding: 3px 8px; border-radius: 4px;
+    white-space: nowrap;
+  }
+  .tag-ouro { background: var(--ouro-dim); color: var(--ouro); border: 1px solid var(--ouro-borda); }
+  .tag-verde { background: var(--verde-dim); color: var(--verde); border: 1px solid rgba(74,158,110,0.25); }
+  .tag-cinza { background: rgba(255,255,255,0.05); color: var(--texto2); border: 1px solid var(--borda); }
+
+  .doc-arrow {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--borda);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: background .2s, border-color .2s;
+    flex-shrink: 0;
+  }
+  .doc-card:hover .doc-arrow {
+    background: var(--ouro);
+    border-color: var(--ouro);
+    color: var(--bg);
+  }
+
+  /* DESTAQUE — card grande */
+  .doc-card.featured {
+    grid-column: span 2;
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+    background: linear-gradient(135deg, rgba(200,168,75,0.08) 0%, var(--card) 60%);
+    border-color: var(--ouro-borda);
+  }
+  @media(max-width:640px){ .doc-card.featured { grid-column: span 1; flex-direction: column; } }
+  .doc-card.featured .doc-emoji {
+    width: 64px; height: 64px; font-size: 28px;
+    background: var(--ouro-dim);
+    border-color: var(--ouro-borda);
+  }
+  .doc-card.featured .doc-titulo { font-size: 22px; }
+  .doc-card.featured .doc-desc { font-size: 13px; max-width: 380px; }
+
+  /* LINHA DO TEMPO */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 48px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 8px; bottom: 8px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--ouro), transparent);
+  }
+  .tl-item {
+    position: relative;
+    padding-bottom: 24px;
+  }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-dot {
+    position: absolute;
+    left: -25px; top: 4px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--ouro);
+    background: var(--bg);
+  }
+  .tl-dot.ativo { background: var(--ouro); }
+  .tl-fase {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--ouro); margin-bottom: 4px;
+  }
+  .tl-titulo { font-size: 14px; font-weight: 600; color: var(--texto); margin-bottom: 4px; }
+  .tl-desc { font-size: 12px; color: var(--texto2); line-height: 1.5; }
+
+  /* RODAPÉ */
+  .rodape {
+    margin: 0 40px;
+    padding: 20px 24px;
+    background: var(--bg2);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    position: relative; z-index: 1;
+  }
+  .rodape-texto { font-size: 12px; color: var(--texto2); line-height: 1.6; }
+  .rodape-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--ouro-dim);
+    border: 1px solid var(--ouro-borda);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--ouro);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  @media(max-width:580px){
+    .hero { padding: 48px 20px 36px; }
+    .wrap { padding: 32px 20px 0; }
+    .rodape { margin: 0 20px; }
+    .hero-stats { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">
+    <div class="eyebrow-line"></div>
+    <div class="eyebrow-text">Planejamento completo · 2026</div>
+    <div class="eyebrow-line"></div>
+  </div>
+  <h1>
+    <div class="linha1">Mini Mercado</div>
+    <div class="linha2">Autônomo</div>
+  </h1>
+  <div class="hero-sub">
+    Central de documentos do seu projeto — do levantamento de custos ao mix de produtos, visão financeira e estratégia de abertura.
+  </div>
+  <div class="hero-stats">
+    <div class="hs-item">
+      <div class="hs-num">5</div>
+      <div class="hs-label">Documentos gerados</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">R$ 53k</div>
+      <div class="hs-label">Investimento estimado</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">R$ 4.546</div>
+      <div class="hs-label">Lucro mensal projetado</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">~16m</div>
+      <div class="hs-label">Payback (parcelado)</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">185+</div>
+      <div class="hs-label">SKUs no mix</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- DOCUMENTOS -->
+  <div class="secao-label">Documentos do projeto</div>
+  <div class="docs-grid">
+
+    <!-- INVESTIMENTO INICIAL — FEATURED -->
+    <div class="doc-card featured" onclick="window.open('mini-mercado-autonomo.html','_blank')">
+      <div class="doc-emoji">📊</div>
+      <div class="doc-info" style="flex:1">
+        <div class="doc-titulo">Levantamento de Custos de Abertura</div>
+        <div class="doc-desc">Visão completa do investimento inicial: tecnologia, estrutura física, regularização, estoque e capital de giro. Cenários mínimo e máximo com proporção de cada bloco.</div>
+        <div class="doc-footer" style="margin-top:14px">
+          <div class="doc-tags">
+            <span class="tag tag-ouro">Investimento</span>
+            <span class="tag tag-cinza">R$ 27k – R$ 76k</span>
+            <span class="tag tag-cinza">Payback 7–18m</span>
+          </div>
+          <div class="doc-arrow">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOS FIXOS -->
+    <div class="doc-card" onclick="window.open('custos-fixos-mini-mercado.html','_blank')">
+      <div class="doc-top">
+        <div class="doc-emoji">🧾</div>
+        <div class="doc-num">02</div>
+      </div>
+      <div class="doc-info">
+        <div class="doc-titulo">Custos Fixos Mensais</div>
+        <div class="doc-desc">Operação, administrativo e impostos detalhados. Tabela Simples Nacional Anexo I com simulação de DAS por faixa de faturamento.</div>
+      </div>
+      <div class="doc-footer">
+        <div class="doc-tags">
+          <span class="tag tag-ouro">Mensal</span>
+          <span class="tag tag-cinza">R$ 2.100–3.500</span>
+          <span class="tag tag-verde">Simples I</span>
+        </div>
+        <div class="doc-arrow">→</div>
+      </div>
+    </div>
+
+    <!-- VISÃO FINANCEIRA -->
+    <div class="doc-card" onclick="window.open('visao-financeira-20k.html','_blank')">
+      <div class="doc-top">
+        <div class="doc-emoji">💹</div>
+        <div class="doc-num">03</div>
+      </div>
+      <div class="doc-info">
+        <div class="doc-titulo">Visão Financeira — R$ 20k/mês</div>
+        <div class="doc-desc">DRE completo, composição do faturamento, comparativo de cenários (R$ 12k / R$ 20k / R$ 30k) e evolução do payback mês a mês.</div>
+      </div>
+      <div class="doc-footer">
+        <div class="doc-tags">
+          <span class="tag tag-verde">Lucro R$ 4.546</span>
+          <span class="tag tag-cinza">Margem 22,7%</span>
+        </div>
+        <div class="doc-arrow">→</div>
+      </div>
+    </div>
+
+    <!-- MIX DE PRODUTOS -->
+    <div class="doc-card" onclick="window.open('mix-produtos.html','_blank')">
+      <div class="doc-top">
+        <div class="doc-emoji">🛒</div>
+        <div class="doc-num">04</div>
+      </div>
+      <div class="doc-info">
+        <div class="doc-titulo">Mix de Produtos</div>
+        <div class="doc-desc">12 categorias com ~185 SKUs baseados no vídeo real de referência. Marcas identificadas, faixas de preço, margem por categoria e itens de maior giro.</div>
+      </div>
+      <div class="doc-footer">
+        <div class="doc-tags">
+          <span class="tag tag-ouro">12 categorias</span>
+          <span class="tag tag-cinza">~185 SKUs</span>
+          <span class="tag tag-verde">Estoque R$ 12–18k</span>
+        </div>
+        <div class="doc-arrow">→</div>
+      </div>
+    </div>
+
+    <!-- PARCELADO VS À VISTA -->
+    <div class="doc-card" onclick="window.open('parcelado-vs-avista.html','_blank')">
+      <div class="doc-top">
+        <div class="doc-emoji">💳</div>
+        <div class="doc-num">05</div>
+      </div>
+      <div class="doc-info">
+        <div class="doc-titulo">À Vista vs Parcelado</div>
+        <div class="doc-desc">Análise do que pode ser parcelado no cartão sem juros, impacto no fluxo de caixa dos primeiros 18 meses e estratégia recomendada de desembolso.</div>
+      </div>
+      <div class="doc-footer">
+        <div class="doc-tags">
+          <span class="tag tag-ouro">R$ 31k parcelável</span>
+          <span class="tag tag-cinza">12x sem juros</span>
+        </div>
+        <div class="doc-arrow">→</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LINHA DO TEMPO -->
+  <div class="secao-label">Ordem de execução sugerida</div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot ativo"></div>
+      <div class="tl-fase">Fase 1 — Antes de tudo</div>
+      <div class="tl-titulo">Planejamento financeiro e escolha do ponto</div>
+      <div class="tl-desc">Valide o ponto (condomínio, empresa), abra o CNPJ como ME, contrate contador. Separe os R$ 22.000 obrigatórios em conta corrente.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-fase">Fase 2 — Regularização</div>
+      <div class="tl-titulo">Licenças, alvará e vigilância sanitária</div>
+      <div class="tl-desc">Processo pode levar 30–90 dias dependendo do município. Inicie imediatamente após abertura do CNPJ. Custo estimado: R$ 2.000.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-fase">Fase 3 — Estrutura física</div>
+      <div class="tl-titulo">Reforma, gôndolas, comunicação visual</div>
+      <div class="tl-desc">Paralelo às licenças. Parcelar prateleiras e comunicação visual no cartão. Reforma/elétrica paga à vista ao prestador de serviço.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-fase">Fase 4 — Equipamentos</div>
+      <div class="tl-titulo">Geladeiras, freezer, totem, câmeras e controle de acesso</div>
+      <div class="tl-desc">Tudo parcelável em 12x sem juros. Concentre as compras no mesmo mês para ter uma única fatura. Total: R$ 31.000 → R$ 2.583/mês.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-fase">Fase 5 — Estoque e abertura</div>
+      <div class="tl-titulo">Abastecimento inicial e inauguração</div>
+      <div class="tl-desc">Compre o estoque inicial via boleto (R$ 10.000). Mantenha R$ 7.000 como capital de giro intocável. Abra as portas e monitore o giro semanalmente.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- RODAPÉ -->
+<div class="rodape">
+  <div class="rodape-texto">
+    Todos os documentos foram gerados com base nos dados fornecidos e pesquisas de mercado 2026.<br>
+    Valores são estimativas — confirme com fornecedores e contador antes de tomar decisões financeiras.
+  </div>
+  <div class="rodape-badge">
+    ✦ Mini Mercado Autônomo · Marca Própria · 2026
+  </div>
+</div>
+
+</body>
+</html>

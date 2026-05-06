@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mix de Produtos — Mini Mercado Autônomo</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --creme: #faf6ef;
+    --creme2: #f2ece0;
+    --creme3: #e8dfd0;
+    --tinta: #1c1510;
+    --tinta2: #6b5f52;
+    --tinta3: #9e9187;
+    --verde: #2d6a4f;
+    --verde-claro: #d8ece3;
+    --laranja: #c75c1a;
+    --laranja-claro: #fbe8d8;
+    --azul: #1a4a6b;
+    --azul-claro: #d8eaf5;
+    --rosa: #8b3a62;
+    --rosa-claro: #f5dce8;
+    --amarelo: #8b6914;
+    --amarelo-claro: #fdf0c0;
+    --roxo: #4a2d6b;
+    --roxo-claro: #e8d8f5;
+    --borda: #ddd5c8;
+    --sombra: 0 2px 16px rgba(28,21,16,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--creme); color: var(--tinta); font-family: 'DM Sans', sans-serif; padding-bottom: 60px; }
+
+  /* HEADER */
+  header {
+    background: var(--tinta);
+    color: var(--creme);
+    padding: 48px 32px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: '🛒';
+    position: absolute;
+    right: 24px; top: 50%; transform: translateY(-50%);
+    font-size: 120px;
+    opacity: .06;
+    pointer-events: none;
+  }
+  .htag {
+    display: inline-block;
+    border: 1px solid rgba(250,246,239,0.2);
+    color: rgba(250,246,239,0.5);
+    font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 20px; margin-bottom: 18px;
+  }
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 12px;
+  }
+  header h1 em { color: #a8d5b5; font-style: normal; }
+  header p { font-size: 14px; color: rgba(250,246,239,0.55); max-width: 500px; line-height: 1.6; }
+
+  /* RESUMO STRIP */
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    border-bottom: 1px solid var(--borda);
+  }
+  .strip-item {
+    padding: 16px 20px;
+    border-right: 1px solid var(--borda);
+    background: var(--creme2);
+  }
+  .strip-item:last-child { border-right: none; }
+  .sl { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--tinta3); margin-bottom: 4px; }
+  .sv { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; color: var(--tinta); }
+
+  /* LAYOUT */
+  .wrap { padding: 32px; }
+  .secao-titulo {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--tinta3);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .secao-titulo::after { content: ''; flex: 1; height: 1px; background: var(--borda); }
+
+  /* CATEGORIA CARD */
+  .cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 36px; }
+
+  .cat-card {
+    background: white;
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--sombra);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .cat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(28,21,16,0.12); }
+
+  .cat-header {
+    padding: 16px 20px 14px;
+    display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid var(--borda);
+  }
+  .cat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .cat-info { flex: 1; }
+  .cat-nome { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; }
+  .cat-sub { font-size: 11px; color: var(--tinta3); margin-top: 2px; }
+  .cat-badge {
+    font-size: 10px; font-weight: 700; letter-spacing: .5px;
+    padding: 3px 9px; border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .cat-body { padding: 14px 20px; }
+  .produto-linha {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--creme3);
+    gap: 8px;
+  }
+  .produto-linha:last-child { border-bottom: none; }
+  .pl-nome { font-size: 13px; color: var(--tinta); display: flex; align-items: center; gap: 6px; }
+  .pl-nome .star { font-size: 10px; }
+  .pl-preco { font-size: 12px; font-weight: 600; color: var(--tinta2); white-space: nowrap; }
+
+  .cat-footer {
+    padding: 10px 20px;
+    background: var(--creme2);
+    border-top: 1px solid var(--borda);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px;
+  }
+  .cf-itens { color: var(--tinta3); }
+  .cf-receita { font-weight: 700; }
+
+  /* ESTRATÉGIA */
+  .estrategia { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 36px; }
+  .est-card {
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid var(--borda);
+  }
+  .est-titulo { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .est-texto { font-size: 13px; color: var(--tinta2); line-height: 1.6; }
+
+  /* TABELA MARGEM */
+  .margem-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--borda);
+    box-shadow: var(--sombra);
+    margin-bottom: 36px;
+    font-size: 13px;
+  }
+  .margem-table th {
+    background: var(--tinta);
+    color: var(--creme);
+    padding: 11px 16px;
+    text-align: left;
+    font-family: 'Fraunces', serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .margem-table td { padding: 11px 16px; border-bottom: 1px solid var(--creme3); color: var(--tinta); }
+  .margem-table tr:last-child td { border-bottom: none; }
+  .margem-table tr:hover td { background: var(--creme2); }
+  .margem-bar { display: flex; align-items: center; gap: 8px; }
+  .mb-fill { height: 6px; border-radius: 3px; }
+  .mb-val { font-size: 12px; font-weight: 700; }
+  .tag-alta { background: var(--verde-claro); color: var(--verde); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+  .tag-media { background: var(--amarelo-claro); color: var(--amarelo); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+  .tag-baixa { background: var(--laranja-claro); color: var(--laranja); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+
+  /* GIRO */
+  .giro-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 36px; }
+  .giro-item {
+    background: white;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    box-shadow: var(--sombra);
+  }
+  .gi-emoji { font-size: 28px; margin-bottom: 8px; }
+  .gi-nome { font-size: 12px; font-weight: 600; color: var(--tinta); margin-bottom: 4px; }
+  .gi-giro { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
+  .gi-label { font-size: 10px; color: var(--tinta3); margin-top: 2px; }
+
+  .rodape {
+    padding: 14px 20px;
+    background: var(--creme2);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    font-size: 12px; color: var(--tinta3); text-align: center; line-height: 1.6;
+  }
+
+  @media(max-width:580px){
+    header, .wrap { padding: 24px 16px; }
+    .cats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htag">Mini Mercado Autônomo · 2026</div>
+  <h1>Mix de <em>Produtos</em><br>Recomendado</h1>
+  <p>Seleção estratégica para maximizar giro, margem e satisfação do cliente em condomínios e ambientes corporativos.</p>
+</header>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-item"><div class="sl">Categorias</div><div class="sv">12</div></div>
+  <div class="strip-item"><div class="sl">SKUs sugeridos</div><div class="sv">~185</div></div>
+  <div class="strip-item"><div class="sl">Margem média</div><div class="sv">35–45%</div></div>
+  <div class="strip-item"><div class="sl">Estoque inicial</div><div class="sv">R$ 12–18k</div></div>
+  <div class="strip-item"><div class="sl">Ticket médio est.</div><div class="sv">R$ 28–36</div></div>
+</div>
+
+<div class="wrap">
+
+<!-- CATEGORIAS -->
+<div class="secao-titulo">Categorias & Produtos</div>
+<div class="cats">
+
+  <!-- BEBIDAS GELADAS -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#d8eaf5">🥤</div>
+      <div class="cat-info">
+        <div class="cat-nome">Bebidas Geladas</div>
+        <div class="cat-sub">Maior volume de vendas · ~25% do faturamento</div>
+      </div>
+      <div class="cat-badge" style="background:var(--azul-claro);color:var(--azul)">⭐ Prioritária</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Água mineral 500ml (H2O/Aquarius)</span><span class="pl-preco">R$ 3–4</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Coca-Cola lata 350ml</span><span class="pl-preco">R$ 5–7</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Energético RedBull / Monster 250ml</span><span class="pl-preco">R$ 10–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Del Valle suco 290ml (laranja/uva/maçã)</span><span class="pl-preco">R$ 6–9</span></div>
+      <div class="produto-linha"><span class="pl-nome">Guaraná Antarctica lata 350ml</span><span class="pl-preco">R$ 5–6</span></div>
+      <div class="produto-linha"><span class="pl-nome">Isotônico Gatorade 500ml</span><span class="pl-preco">R$ 7–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">Chá/Lipton gelado garrafa</span><span class="pl-preco">R$ 6–9</span></div>
+      <div class="produto-linha"><span class="pl-nome">Água com gás 500ml</span><span class="pl-preco">R$ 4–5</span></div>
+      <div class="produto-linha"><span class="pl-nome">Fanta laranja garrafa 600ml</span><span class="pl-preco">R$ 6–8</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">9 SKUs · giro alto</span>
+      <span class="cf-receita" style="color:var(--azul)">~R$ 5.000/mês</span>
+    </div>
+  </div>
+
+  <!-- SNACKS & DOCES -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#fbe8d8">🍫</div>
+      <div class="cat-info">
+        <div class="cat-nome">Chocolates, Doces & Salgadinhos</div>
+        <div class="cat-sub">Alta margem · compra por impulso · ~20% fat.</div>
+      </div>
+      <div class="cat-badge" style="background:var(--laranja-claro);color:var(--laranja)">💰 Alta margem</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Snickers / Twix / M&M's</span><span class="pl-preco">R$ 8–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Kit Kat (tradicional e branco)</span><span class="pl-preco">R$ 7–12</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Hershey's tablete 100g</span><span class="pl-preco">R$ 10–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Doritos / Ruffles 50–100g</span><span class="pl-preco">R$ 7–11</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Pringles lata 100g</span><span class="pl-preco">R$ 12–18</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Fini balas/gummies (várias)</span><span class="pl-preco">R$ 8–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">Bis (caixa individual)</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">Suflair Nestlé</span><span class="pl-preco">R$ 8–12</span></div>
+      <div class="produto-linha"><span class="pl-nome">Trento / Wafer</span><span class="pl-preco">R$ 4–7</span></div>
+      <div class="produto-linha"><span class="pl-nome">Pipoca pronta (PopCorn)</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">Amendoim / castanha porção</span><span class="pl-preco">R$ 6–12</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">11 SKUs · giro alto</span>
+      <span class="cf-receita" style="color:var(--laranja)">~R$ 4.000/mês</span>
+    </div>
+  </div>
+
+  <!-- REFEIÇÃO RÁPIDA -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#d8ece3">🍱</div>
+      <div class="cat-info">
+        <div class="cat-nome">Refeição Rápida</div>
+        <div class="cat-sub">Maior ticket · horário de almoço · ~18% fat.</div>
+      </div>
+      <div class="cat-badge" style="background:var(--verde-claro);color:var(--verde)">🎯 Ticket alto</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Macarrão instantâneo (cup)</span><span class="pl-preco">R$ 8–12</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Sanduíche/wrap embalado</span><span class="pl-preco">R$ 14–22</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Iogurte grego/proteico</span><span class="pl-preco">R$ 8–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">Salada de frutas embalada</span><span class="pl-preco">R$ 10–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">Pasta de amendoim sache</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">Atum/sardinha em lata</span><span class="pl-preco">R$ 8–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">Granola porção individual</span><span class="pl-preco">R$ 6–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">Tapioca/pão de queijo congelado</span><span class="pl-preco">R$ 8–15</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">8 SKUs · giro médio-alto</span>
+      <span class="cf-receita" style="color:var(--verde)">~R$ 3.600/mês</span>
+    </div>
+  </div>
+
+  <!-- HIGIENE PESSOAL -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#f5dce8">🧴</div>
+      <div class="cat-info">
+        <div class="cat-nome">Higiene Pessoal</div>
+        <div class="cat-sub">Compra de necessidade · fideliza · ~15% fat.</div>
+      </div>
+      <div class="cat-badge" style="background:var(--rosa-claro);color:var(--rosa)">🔁 Recorrente</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Desodorante roll-on/spray</span><span class="pl-preco">R$ 10–18</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Shampoo sachê/mini</span><span class="pl-preco">R$ 5–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Escova + creme dental kit</span><span class="pl-preco">R$ 12–20</span></div>
+      <div class="produto-linha"><span class="pl-nome">Absorvente diário embalagem</span><span class="pl-preco">R$ 8–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">Preservativo embalagem c/3</span><span class="pl-preco">R$ 12–18</span></div>
+      <div class="produto-linha"><span class="pl-nome">Lenço umedecido pack</span><span class="pl-preco">R$ 6–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">Cotonete / algodão</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">Protetor solar sachê</span><span class="pl-preco">R$ 8–15</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">8 SKUs · giro médio</span>
+      <span class="cf-receita" style="color:var(--rosa)">~R$ 3.000/mês</span>
+    </div>
+  </div>
+
+  <!-- CAFÉ & MANHÃ -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#fdf0c0">☕</div>
+      <div class="cat-info">
+        <div class="cat-nome">Café & Café da Manhã</div>
+        <div class="cat-sub">Rotina diária · manhã e tarde · ~10% fat.</div>
+      </div>
+      <div class="cat-badge" style="background:var(--amarelo-claro);color:var(--amarelo)">🌅 Rotina</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Café Melitta moído 250g</span><span class="pl-preco">R$ 10–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Nescafé solúvel sachê/frasco</span><span class="pl-preco">R$ 6–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Milo achocolatado Nestlé 400g</span><span class="pl-preco">R$ 18–26</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Leite em pó integral 400g</span><span class="pl-preco">R$ 16–24</span></div>
+      <div class="produto-linha"><span class="pl-nome">Leite UHT integral 1L</span><span class="pl-preco">R$ 7–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">Achocolatado caixinha 200ml</span><span class="pl-preco">R$ 4–6</span></div>
+      <div class="produto-linha"><span class="pl-nome">Aveia porção individual</span><span class="pl-preco">R$ 6–9</span></div>
+      <div class="produto-linha"><span class="pl-nome">Mel sachê / geleia unitária</span><span class="pl-preco">R$ 4–7</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">8 SKUs · giro médio-alto</span>
+      <span class="cf-receita" style="color:var(--amarelo)">~R$ 2.000/mês</span>
+    </div>
+  </div>
+
+  <!-- SUPLEMENTOS & FUNCIONAIS -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#e8d8f5">💪</div>
+      <div class="cat-info">
+        <div class="cat-nome">Suplementos & Funcionais</div>
+        <div class="cat-sub">Alta margem · sem farmacêutico · ~7% fat.</div>
+      </div>
+      <div class="cat-badge" style="background:var(--roxo-claro);color:var(--roxo)">💰 Alta margem</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Whey protein sachê dose</span><span class="pl-preco">R$ 10–18</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Vitamina C + Zinco sachê</span><span class="pl-preco">R$ 6–12</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Colágeno sachê individual</span><span class="pl-preco">R$ 6–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">BCAA sachê dose única</span><span class="pl-preco">R$ 8–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">Creatina sachê individual</span><span class="pl-preco">R$ 8–12</span></div>
+      <div class="produto-linha"><span class="pl-nome">Eletrólitos / reidratante sachê</span><span class="pl-preco">R$ 6–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">Ômega 3 cápsula blister</span><span class="pl-preco">R$ 8–14</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">7 SKUs · margem 45–55%</span>
+      <span class="cf-receita" style="color:var(--roxo)">~R$ 1.400/mês</span>
+    </div>
+  </div>
+
+  <!-- LIMPEZA / UTILIDADES -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#d8ece3">🧹</div>
+      <div class="cat-info">
+        <div class="cat-nome">Utilidades & Limpeza</div>
+        <div class="cat-sub">Compra de necessidade · ~5% fat.</div>
+      </div>
+      <div class="cat-badge" style="background:var(--verde-claro);color:var(--verde)">🏠 Utilidade</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Detergente Ypê 500ml</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Papel higiênico Neve 4 rolos</span><span class="pl-preco">R$ 8–12</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Água sanitária Dona Benta</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">Desinfetante multiuso 500ml</span><span class="pl-preco">R$ 6–9</span></div>
+      <div class="produto-linha"><span class="pl-nome">Esponja de limpeza</span><span class="pl-preco">R$ 4–7</span></div>
+      <div class="produto-linha"><span class="pl-nome">Álcool gel 60ml</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">Sabão em pó / líquido 500g</span><span class="pl-preco">R$ 8–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">Papel toalha mini rolo</span><span class="pl-preco">R$ 5–9</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">8 SKUs · giro médio</span>
+      <span class="cf-receita" style="color:var(--verde)">~R$ 1.000/mês</span>
+    </div>
+  </div>
+
+  <!-- MERCEARIA BÁSICA -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#fdf0c0">🛒</div>
+      <div class="cat-info">
+        <div class="cat-nome">Mercearia Básica & Temperos</div>
+        <div class="cat-sub">Fidelização · "achei o que precisava" · ~8% fat.</div>
+      </div>
+      <div class="cat-badge" style="background:var(--amarelo-claro);color:var(--amarelo)">🏠 Âncora</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Molho de tomate Pomarola 300g</span><span class="pl-preco">R$ 6–9</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Macarrão espaguete 500g</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Arroz agulhinha 1kg</span><span class="pl-preco">R$ 7–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Feijão carioca 500g</span><span class="pl-preco">R$ 6–9</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Ketchup Heinz 397g</span><span class="pl-preco">R$ 10–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Maionese Hellmann's 250g</span><span class="pl-preco">R$ 10–15</span></div>
+      <div class="produto-linha"><span class="pl-nome">Mostarda Heinz</span><span class="pl-preco">R$ 8–12</span></div>
+      <div class="produto-linha"><span class="pl-nome">Molho shoyu sachê/garrafa</span><span class="pl-preco">R$ 5–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">Azeite extra virgem 250ml</span><span class="pl-preco">R$ 18–26</span></div>
+      <div class="produto-linha"><span class="pl-nome">Óleo de soja 500ml</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">Sal refinado 500g</span><span class="pl-preco">R$ 3–5</span></div>
+      <div class="produto-linha"><span class="pl-nome">Vinagre 500ml</span><span class="pl-preco">R$ 4–7</span></div>
+      <div class="produto-linha"><span class="pl-nome">Fósforo / isqueiro</span><span class="pl-preco">R$ 3–6</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Carvão vegetal 3kg</span><span class="pl-preco">R$ 18–28</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">14 SKUs · estoque mínimo</span>
+      <span class="cf-receita" style="color:var(--amarelo)">~R$ 1.800/mês</span>
+    </div>
+  </div>
+
+  <!-- FRIOS & LATICÍNIOS -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#d8eaf5">🧀</div>
+      <div class="cat-info">
+        <div class="cat-nome">Frios & Laticínios</div>
+        <div class="cat-sub">Alto giro · ticket relevante · ~10% fat.</div>
+      </div>
+      <div class="cat-badge" style="background:var(--azul-claro);color:var(--azul)">❄️ Refrigerado</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Queijo muçarela fatiado 150g</span><span class="pl-preco">R$ 12–18</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Presunto cozido fatiado 150g</span><span class="pl-preco">R$ 10–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Manteiga 200g</span><span class="pl-preco">R$ 12–18</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Requeijão cremoso 200g</span><span class="pl-preco">R$ 10–15</span></div>
+      <div class="produto-linha"><span class="pl-nome">Queijo prato fatiado 150g</span><span class="pl-preco">R$ 12–18</span></div>
+      <div class="produto-linha"><span class="pl-nome">Iogurte natural/grego 150g</span><span class="pl-preco">R$ 6–12</span></div>
+      <div class="produto-linha"><span class="pl-nome">Ovos caipira c/6 unidades</span><span class="pl-preco">R$ 10–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">Leite integral 1L</span><span class="pl-preco">R$ 7–10</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">8 SKUs · monitorar validade</span>
+      <span class="cf-receita" style="color:var(--azul)">~R$ 2.000/mês</span>
+    </div>
+  </div>
+
+  <!-- BEBIDAS FAMÍLIA -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#d8ece3">🍾</div>
+      <div class="cat-info">
+        <div class="cat-nome">Bebidas Família (2L)</div>
+        <div class="cat-sub">Garrafa grande · compra planejada · ~5% fat.</div>
+      </div>
+      <div class="cat-badge" style="background:var(--verde-claro);color:var(--verde)">🛒 Planejada</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Coca-Cola 2L</span><span class="pl-preco">R$ 12–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Coca-Cola Zero 2L</span><span class="pl-preco">R$ 12–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Guaraná Antarctica 2L</span><span class="pl-preco">R$ 10–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">Fanta / Sprite 2L</span><span class="pl-preco">R$ 10–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">Del Valle suco 1L</span><span class="pl-preco">R$ 10–14</span></div>
+      <div class="produto-linha"><span class="pl-nome">Água mineral 1,5L</span><span class="pl-preco">R$ 5–7</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">6 SKUs · giro bom</span>
+      <span class="cf-receita" style="color:var(--verde)">~R$ 1.000/mês</span>
+    </div>
+  </div>
+
+  <!-- CERVEJAS -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#fbe8d8">🍺</div>
+      <div class="cat-info">
+        <div class="cat-nome">Cervejas</div>
+        <div class="cat-sub">Geladeira exclusiva -4,6°C · alta rotação</div>
+      </div>
+      <div class="cat-badge" style="background:var(--laranja-claro);color:var(--laranja)">❄️ -4,6°C</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Heineken lata 350ml</span><span class="pl-preco">R$ 7–10</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Stella Artois long neck 330ml</span><span class="pl-preco">R$ 8–12</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Spaten lata 350ml</span><span class="pl-preco">R$ 6–9</span></div>
+      <div class="produto-linha"><span class="pl-nome">Budweiser lata 350ml</span><span class="pl-preco">R$ 6–9</span></div>
+      <div class="produto-linha"><span class="pl-nome">Amstel lata 350ml</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">Império lata 350ml</span><span class="pl-preco">R$ 5–8</span></div>
+      <div class="produto-linha"><span class="pl-nome">Stella Artois Ice long neck</span><span class="pl-preco">R$ 8–12</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">7 SKUs · giro alto fim de semana</span>
+      <span class="cf-receita" style="color:var(--laranja)">~R$ 1.500/mês</span>
+    </div>
+  </div>
+
+  <!-- CONGELADOS -->
+  <div class="cat-card">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:#d8eaf5">🧊</div>
+      <div class="cat-info">
+        <div class="cat-nome">Congelados</div>
+        <div class="cat-sub">Freezer separado · praticidade · ticket alto</div>
+      </div>
+      <div class="cat-badge" style="background:var(--azul-claro);color:var(--azul)">🧊 Freezer</div>
+    </div>
+    <div class="cat-body">
+      <div class="produto-linha"><span class="pl-nome">🌟 Pão de queijo congelado 400g</span><span class="pl-preco">R$ 14–22</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Lasanha congelada individual</span><span class="pl-preco">R$ 16–26</span></div>
+      <div class="produto-linha"><span class="pl-nome">🌟 Hambúrguer congelado c/2</span><span class="pl-preco">R$ 12–20</span></div>
+      <div class="produto-linha"><span class="pl-nome">Nuggets / empanados congelado</span><span class="pl-preco">R$ 14–22</span></div>
+      <div class="produto-linha"><span class="pl-nome">Açaí em pote 300g</span><span class="pl-preco">R$ 14–22</span></div>
+      <div class="produto-linha"><span class="pl-nome">Sorvete pote individual</span><span class="pl-preco">R$ 8–16</span></div>
+      <div class="produto-linha"><span class="pl-nome">Pizza congelada pequena</span><span class="pl-preco">R$ 18–28</span></div>
+    </div>
+    <div class="cat-footer">
+      <span class="cf-itens">7 SKUs · ticket alto</span>
+      <span class="cf-receita" style="color:var(--azul)">~R$ 1.200/mês</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- MARGEM POR CATEGORIA -->
+<div class="secao-titulo">Margem Bruta por Categoria</div>
+<table class="margem-table">
+  <thead>
+    <tr>
+      <th>Categoria</th>
+      <th>Part. Faturamento</th>
+      <th>Margem estimada</th>
+      <th>Perfil</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>🍫 Snacks & Doces</td>
+      <td>~20%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:55px;background:#c75c1a"></div>
+          <span class="mb-val" style="color:var(--laranja)">50–60%</span>
+        </div>
+      </td>
+      <td><span class="tag-alta">ALTA</span></td>
+    </tr>
+    <tr>
+      <td>💪 Suplementos & Funcionais</td>
+      <td>~7%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:50px;background:#c75c1a"></div>
+          <span class="mb-val" style="color:var(--laranja)">45–55%</span>
+        </div>
+      </td>
+      <td><span class="tag-alta">ALTA</span></td>
+    </tr>
+    <tr>
+      <td>🧴 Higiene Pessoal</td>
+      <td>~15%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:44px;background:#8b6914"></div>
+          <span class="mb-val" style="color:var(--amarelo)">40–50%</span>
+        </div>
+      </td>
+      <td><span class="tag-alta">ALTA</span></td>
+    </tr>
+    <tr>
+      <td>☕ Café & Manhã</td>
+      <td>~10%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:40px;background:#8b6914"></div>
+          <span class="mb-val" style="color:var(--amarelo)">38–45%</span>
+        </div>
+      </td>
+      <td><span class="tag-media">MÉDIA</span></td>
+    </tr>
+    <tr>
+      <td>🍱 Refeição Rápida</td>
+      <td>~18%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:35px;background:#8b6914"></div>
+          <span class="mb-val" style="color:var(--amarelo)">35–42%</span>
+        </div>
+      </td>
+      <td><span class="tag-media">MÉDIA</span></td>
+    </tr>
+    <tr>
+      <td>🥤 Bebidas</td>
+      <td>~25%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:28px;background:#2d6a4f"></div>
+          <span class="mb-val" style="color:var(--verde)">25–35%</span>
+        </div>
+      </td>
+      <td><span class="tag-baixa">MENOR</span></td>
+    </tr>
+    <tr>
+      <td>🧀 Frios & Laticínios</td>
+      <td>~10%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:30px;background:#1a4a6b"></div>
+          <span class="mb-val" style="color:var(--azul)">28–38%</span>
+        </div>
+      </td>
+      <td><span class="tag-media">MÉDIA</span></td>
+    </tr>
+    <tr>
+      <td>🛒 Mercearia Básica</td>
+      <td>~8%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:22px;background:#2d6a4f"></div>
+          <span class="mb-val" style="color:var(--verde)">20–28%</span>
+        </div>
+      </td>
+      <td><span class="tag-baixa">MENOR</span></td>
+    </tr>
+    <tr>
+      <td>🍾 Bebidas Família</td>
+      <td>~5%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:20px;background:#2d6a4f"></div>
+          <span class="mb-val" style="color:var(--verde)">18–25%</span>
+        </div>
+      </td>
+      <td><span class="tag-baixa">MENOR</span></td>
+    </tr>
+    <tr>
+      <td>🧹 Utilidades & Limpeza</td>
+      <td>~5%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:25px;background:#2d6a4f"></div>
+          <span class="mb-val" style="color:var(--verde)">22–30%</span>
+        </div>
+      </td>
+      <td><span class="tag-baixa">MENOR</span></td>
+    </tr>
+    <tr>
+      <td>🍺 Cervejas</td>
+      <td>~6%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:26px;background:#2d6a4f"></div>
+          <span class="mb-val" style="color:var(--verde)">25–35%</span>
+        </div>
+      </td>
+      <td><span class="tag-baixa">MENOR</span></td>
+    </tr>
+    <tr>
+      <td>🧊 Congelados</td>
+      <td>~5%</td>
+      <td>
+        <div class="margem-bar">
+          <div class="mb-fill" style="width:36px;background:#8b6914"></div>
+          <span class="mb-val" style="color:var(--amarelo)">35–45%</span>
+        </div>
+      </td>
+      <td><span class="tag-media">MÉDIA</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- GIRO ESTIMADO -->
+<div class="secao-titulo">Itens de Maior Giro</div>
+<div class="giro-grid">
+  <div class="giro-item">
+    <div class="gi-emoji">💧</div>
+    <div class="gi-nome">Água mineral</div>
+    <div class="gi-giro" style="color:var(--azul)">2–3x</div>
+    <div class="gi-label">renovação/semana</div>
+  </div>
+  <div class="giro-item">
+    <div class="gi-emoji">🥤</div>
+    <div class="gi-nome">Refrigerante lata</div>
+    <div class="gi-giro" style="color:var(--azul)">2x</div>
+    <div class="gi-label">renovação/semana</div>
+  </div>
+  <div class="giro-item">
+    <div class="gi-emoji">⚡</div>
+    <div class="gi-nome">Energético</div>
+    <div class="gi-giro" style="color:var(--laranja)">1–2x</div>
+    <div class="gi-label">renovação/semana</div>
+  </div>
+  <div class="giro-item">
+    <div class="gi-emoji">🍫</div>
+    <div class="gi-nome">Chocolate</div>
+    <div class="gi-giro" style="color:var(--laranja)">1x</div>
+    <div class="gi-label">renovação/semana</div>
+  </div>
+  <div class="giro-item">
+    <div class="gi-emoji">🥔</div>
+    <div class="gi-nome">Batata chips</div>
+    <div class="gi-giro" style="color:var(--laranja)">1–2x</div>
+    <div class="gi-label">renovação/semana</div>
+  </div>
+  <div class="giro-item">
+    <div class="gi-emoji">💪</div>
+    <div class="gi-nome">Barra proteína</div>
+    <div class="gi-giro" style="color:var(--verde)">1x</div>
+    <div class="gi-label">renovação/semana</div>
+  </div>
+</div>
+
+<!-- ESTRATÉGIA -->
+<div class="secao-titulo">Dicas de Mix Estratégico</div>
+<div class="estrategia">
+  <div class="est-card" style="background:var(--verde-claro);border-color:#b2d8c6">
+    <div class="est-titulo" style="color:var(--verde)">🎯 Regra 80/20</div>
+    <div class="est-texto">Foque nos ~24 SKUs marcados com 🌟 — eles respondem por cerca de 80% do faturamento. Comece com eles e amplie conforme a demanda local.</div>
+  </div>
+  <div class="est-card" style="background:var(--laranja-claro);border-color:#f0c4a8">
+    <div class="est-titulo" style="color:var(--laranja)">💰 Priorize margem</div>
+    <div class="est-texto">Snacks, higiene, suplementos e congelados têm margens acima de 40%. Ocupam pouco espaço e têm boa validade — ideais para maximizar o lucro por m² de prateleira.</div>
+  </div>
+  <div class="est-card" style="background:var(--amarelo-claro);border-color:#e8d090">
+    <div class="est-titulo" style="color:var(--amarelo)">📦 Tamanho individual</div>
+    <div class="est-texto">Prefira embalagens individuais e de conveniência. O cliente do mini mercado autônomo compra por impulso ou necessidade pontual — não faz estoque em casa.</div>
+  </div>
+  <div class="est-card" style="background:var(--azul-claro);border-color:#a8c8e8">
+    <div class="est-titulo" style="color:var(--azul)">📅 Validade & perecíveis</div>
+    <div class="est-texto">Evite perecíveis de curta validade no início. Prefira produtos com prazo acima de 90 dias até ter certeza do giro da unidade. Reduza risco de perda.</div>
+  </div>
+  <div class="est-card" style="background:var(--roxo-claro);border-color:#c0a0e0">
+    <div class="est-titulo" style="color:var(--roxo)">🏠 Adapte ao local</div>
+    <div class="est-texto">Condomínio residencial: reforce bebidas, snacks e higiene. Empresa/corporativo: priorize café, refeição rápida e barras de proteína no horário comercial.</div>
+  </div>
+  <div class="est-card" style="background:var(--rosa-claro);border-color:#dca8c4">
+    <div class="est-titulo" style="color:var(--rosa)">🔄 Revise mensalmente</div>
+    <div class="est-texto">Nos primeiros 3 meses, monitore o giro de cada SKU semanalmente. Corte o que não vende e substitua por variações do que vende bem. O mix ideal evolui.</div>
+  </div>
+</div>
+
+<div class="rodape">
+  🌟 Itens marcados com estrela = foco inicial recomendado · Preços sugeridos de venda ao consumidor final — ajuste conforme sua região e público.<br>
+  Margem bruta calculada sobre preço de venda. CMV médio de 55–65% varia por fornecedor e volume de compra.
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visão Financeira — Mini Mercado R$ 20k/mês</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f0e;
+    --bg2: #111815;
+    --bg3: #161e1b;
+    --card: #131a17;
+    --verde: #00d97e;
+    --verde2: #00a85f;
+    --verde-dim: rgba(0,217,126,0.12);
+    --vermelho: #ff4d4d;
+    --vermelho-dim: rgba(255,77,77,0.12);
+    --amarelo: #f5c542;
+    --amarelo-dim: rgba(245,197,66,0.12);
+    --azul: #4da6ff;
+    --borda: rgba(255,255,255,0.07);
+    --texto: #e8ede9;
+    --texto2: #7a9488;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--texto); font-family: var(--sans); min-height: 100vh; padding-bottom: 60px; }
+
+  /* HEADER */
+  header {
+    padding: 48px 28px 36px;
+    border-bottom: 1px solid var(--borda);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(0,217,126,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--verde-dim);
+    border: 1px solid rgba(0,217,126,0.25);
+    color: var(--verde);
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 20px; margin-bottom: 20px;
+  }
+  .dot-live { width: 6px; height: 6px; background: var(--verde); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  header h1 { font-family: var(--mono); font-size: clamp(28px, 5vw, 44px); font-weight: 700; line-height: 1.1; letter-spacing: -1px; }
+  header h1 .fat { color: var(--verde); }
+  .header-sub { margin-top: 10px; font-size: 14px; color: var(--texto2); }
+
+  /* GRID PRINCIPAL */
+  .wrap { padding: 28px; max-width: 960px; }
+
+  /* KPI ROW */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 28px; }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: 18px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .2s; }
+  .kpi:hover::before { opacity: 1; }
+  .kpi.verde { border-color: rgba(0,217,126,0.25); }
+  .kpi.verde::before { background: var(--verde-dim); }
+  .kpi.vermelho { border-color: rgba(255,77,77,0.2); }
+  .kpi.vermelho::before { background: var(--vermelho-dim); }
+  .kpi.amarelo { border-color: rgba(245,197,66,0.2); }
+  .kpi.amarelo::before { background: var(--amarelo-dim); }
+  .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto2); margin-bottom: 8px; position: relative; }
+  .kpi-val { font-family: var(--mono); font-size: 22px; font-weight: 700; position: relative; }
+  .kpi.verde .kpi-val { color: var(--verde); }
+  .kpi.vermelho .kpi-val { color: var(--vermelho); }
+  .kpi.amarelo .kpi-val { color: var(--amarelo); }
+  .kpi-val.neutro { color: var(--texto); }
+  .kpi-sub { font-size: 11px; color: var(--texto2); margin-top: 4px; position: relative; }
+
+  /* DRE */
+  .dre {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .dre-header {
+    padding: 14px 20px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--borda);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .dre-titulo { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--verde); }
+  .dre-subtitulo { font-size: 11px; color: var(--texto2); }
+  .dre-linha {
+    display: grid;
+    grid-template-columns: 28px 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--borda);
+    transition: background .15s;
+    cursor: default;
+  }
+  .dre-linha:last-child { border-bottom: none; }
+  .dre-linha:hover { background: rgba(255,255,255,0.025); }
+  .dre-linha.grupo { background: var(--bg3); padding: 8px 20px; }
+  .dre-linha.total-parcial { background: rgba(255,255,255,0.03); border-top: 1px solid var(--borda); }
+  .dre-linha.total-final { background: rgba(0,217,126,0.08); border-top: 2px solid rgba(0,217,126,0.3); }
+  .dre-linha.negativo { }
+  .dl-icon { font-size: 14px; text-align: center; }
+  .dl-nome { font-size: 13px; color: var(--texto); }
+  .dl-nome.dim { color: var(--texto2); font-size: 12px; }
+  .dl-nome.bold { font-weight: 700; font-size: 14px; }
+  .dl-pct {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .pct-verde { background: var(--verde-dim); color: var(--verde); }
+  .pct-vermelho { background: var(--vermelho-dim); color: var(--vermelho); }
+  .pct-amarelo { background: var(--amarelo-dim); color: var(--amarelo); }
+  .pct-cinza { background: rgba(255,255,255,0.06); color: var(--texto2); }
+  .dl-val {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .dl-val.rec { color: var(--verde); }
+  .dl-val.des { color: var(--vermelho); }
+  .dl-val.neu { color: var(--texto); }
+  .dl-val.big { font-size: 18px; color: var(--verde); }
+  .grupo-label {
+    grid-column: 1 / -1;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--texto2);
+  }
+
+  /* BARRA VISUAL */
+  .barra-section { margin-bottom: 24px; }
+  .barra-titulo { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto2); margin-bottom: 14px; }
+  .barra-wrap {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .barra-item { margin-bottom: 14px; }
+  .barra-item:last-child { margin-bottom: 0; }
+  .barra-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .barra-nome { font-size: 13px; color: var(--texto); }
+  .barra-info { font-family: var(--mono); font-size: 12px; color: var(--texto2); }
+  .barra-bg { background: rgba(255,255,255,0.05); border-radius: 4px; height: 6px; overflow: hidden; }
+  .barra-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+  /* CENÁRIOS */
+  .cenarios { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .cenario-card {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: 18px;
+    transition: border-color .2s;
+  }
+  .cenario-card.atual { border-color: rgba(0,217,126,0.35); background: rgba(0,217,126,0.04); }
+  .cenario-card:hover { border-color: rgba(255,255,255,0.15); }
+  .cen-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto2); margin-bottom: 8px; }
+  .cen-label.ativo { color: var(--verde); }
+  .cen-fat { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--texto); margin-bottom: 12px; }
+  .cen-linha { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+  .cen-k { color: var(--texto2); }
+  .cen-v { font-family: var(--mono); font-weight: 600; }
+  .cen-v.g { color: var(--verde); }
+  .cen-v.r { color: var(--vermelho); }
+  .cen-v.a { color: var(--amarelo); }
+  .cen-divider { border: none; border-top: 1px solid var(--borda); margin: 8px 0; }
+  .cen-lucro { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-top: 4px; }
+  .cen-lucro-val { font-family: var(--mono); }
+
+  /* PAYBACK */
+  .payback-card {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 24px;
+  }
+  .pb-titulo { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto2); margin-bottom: 16px; }
+  .pb-linha { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .pb-mes { font-family: var(--mono); font-size: 12px; color: var(--texto2); min-width: 48px; }
+  .pb-barra-bg { flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; height: 10px; overflow: hidden; }
+  .pb-barra-fill { height: 100%; background: var(--verde); border-radius: 4px; transition: width 1.2s ease; }
+  .pb-val { font-family: var(--mono); font-size: 12px; min-width: 80px; text-align: right; }
+  .pb-val.pos { color: var(--verde); }
+  .pb-val.neg { color: var(--vermelho); }
+  .pb-marco {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--verde-dim);
+    border: 1px solid rgba(0,217,126,0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--verde);
+    font-weight: 600;
+  }
+
+  /* ALERTA */
+  .alertas { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 28px; }
+  .alerta { border-radius: 10px; padding: 14px 16px; border-left: 3px solid; }
+  .alerta.g { background: var(--verde-dim); border-color: var(--verde); }
+  .alerta.r { background: var(--vermelho-dim); border-color: var(--vermelho); }
+  .alerta.a { background: var(--amarelo-dim); border-color: var(--amarelo); }
+  .al-t { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+  .alerta.g .al-t { color: var(--verde); }
+  .alerta.r .al-t { color: var(--vermelho); }
+  .alerta.a .al-t { color: var(--amarelo); }
+  .al-tx { font-size: 12px; color: var(--texto2); line-height: 1.5; }
+
+  .rodape {
+    margin: 0 28px;
+    padding: 12px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--texto2);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 560px) {
+    header, .wrap { padding: 24px 16px; }
+    .dre-linha { grid-template-columns: 22px 1fr auto; }
+    .dl-pct { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge"><div class="dot-live"></div>Simulação financeira</div>
+  <h1>Mini Mercado Autônomo<br><span class="fat">R$ 20.000 / mês</span></h1>
+  <div class="header-sub">Marca própria · Simples Nacional Anexo I · Sem funcionários · 2026</div>
+</header>
+
+<div class="wrap">
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi verde">
+      <div class="kpi-label">Faturamento Bruto</div>
+      <div class="kpi-val">R$ 20.000</div>
+      <div class="kpi-sub">100% da receita</div>
+    </div>
+    <div class="kpi vermelho">
+      <div class="kpi-label">Total de Despesas</div>
+      <div class="kpi-val">R$ 15.454</div>
+      <div class="kpi-sub">77,3% do faturamento</div>
+    </div>
+    <div class="kpi verde">
+      <div class="kpi-label">Lucro Líquido</div>
+      <div class="kpi-val">R$ 4.546</div>
+      <div class="kpi-sub">22,7% de margem</div>
+    </div>
+    <div class="kpi amarelo">
+      <div class="kpi-label">Payback</div>
+      <div class="kpi-val">~7 meses</div>
+      <div class="kpi-sub">invest. médio R$ 33k</div>
+    </div>
+    <div class="kpi" style="border-color:rgba(77,166,255,0.2)">
+      <div class="kpi-label">Ticket médio est.</div>
+      <div class="kpi-val kpi-val neutro" style="color:var(--azul)">R$ 28</div>
+      <div class="kpi-sub">~714 transações/mês</div>
+    </div>
+  </div>
+
+  <!-- DRE -->
+  <div class="dre">
+    <div class="dre-header">
+      <div class="dre-titulo">DRE — Demonstrativo de Resultado</div>
+      <div class="dre-subtitulo">Mês base · faturamento R$ 20.000</div>
+    </div>
+
+    <!-- RECEITA -->
+    <div class="dre-linha grupo"><div class="grupo-label">Receita</div></div>
+    <div class="dre-linha">
+      <div class="dl-icon">💰</div>
+      <div class="dl-nome bold">Faturamento bruto</div>
+      <div class="dl-pct pct-verde">100%</div>
+      <div class="dl-val rec">+ R$ 20.000</div>
+    </div>
+
+    <!-- CMV -->
+    <div class="dre-linha grupo"><div class="grupo-label">Custo da Mercadoria Vendida (CMV)</div></div>
+    <div class="dre-linha">
+      <div class="dl-icon">🛒</div>
+      <div class="dl-nome">Reposição de estoque</div>
+      <div class="dl-pct pct-vermelho">60%</div>
+      <div class="dl-val des">− R$ 12.000</div>
+    </div>
+    <div class="dre-linha total-parcial">
+      <div class="dl-icon"></div>
+      <div class="dl-nome bold">Lucro Bruto</div>
+      <div class="dl-pct pct-verde">40%</div>
+      <div class="dl-val rec">R$ 8.000</div>
+    </div>
+
+    <!-- DESPESAS OPERACIONAIS -->
+    <div class="dre-linha grupo"><div class="grupo-label">Despesas Operacionais Fixas</div></div>
+    <div class="dre-linha">
+      <div class="dl-icon">💡</div>
+      <div class="dl-nome dim">Energia elétrica (3% fat.)</div>
+      <div class="dl-pct pct-amarelo">3,0%</div>
+      <div class="dl-val des">− R$ 600</div>
+    </div>
+    <div class="dre-linha">
+      <div class="dl-icon">🌐</div>
+      <div class="dl-nome dim">Internet banda larga</div>
+      <div class="dl-pct pct-cinza">0,75%</div>
+      <div class="dl-val des">− R$ 150</div>
+    </div>
+    <div class="dre-linha">
+      <div class="dl-icon">☁️</div>
+      <div class="dl-nome dim">Software de gestão (SaaS)</div>
+      <div class="dl-pct pct-cinza">2,5%</div>
+      <div class="dl-val des">− R$ 500</div>
+    </div>
+    <div class="dre-linha">
+      <div class="dl-icon">🔧</div>
+      <div class="dl-nome dim">Manutenção de equipamentos</div>
+      <div class="dl-pct pct-cinza">1,0%</div>
+      <div class="dl-val des">− R$ 200</div>
+    </div>
+    <div class="dre-linha">
+      <div class="dl-icon">🔒</div>
+      <div class="dl-nome dim">Seguro do estabelecimento</div>
+      <div class="dl-pct pct-cinza">0,7%</div>
+      <div class="dl-val des">− R$ 140</div>
+    </div>
+
+    <!-- DESPESAS ADMINISTRATIVAS -->
+    <div class="dre-linha grupo"><div class="grupo-label">Despesas Administrativas & Financeiras</div></div>
+    <div class="dre-linha">
+      <div class="dl-icon">💼</div>
+      <div class="dl-nome dim">Contabilidade mensal</div>
+      <div class="dl-pct pct-cinza">1,38%</div>
+      <div class="dl-val des">− R$ 275</div>
+    </div>
+    <div class="dre-linha">
+      <div class="dl-icon">💳</div>
+      <div class="dl-nome dim">Taxa gateway de pagamento (~1,75%)</div>
+      <div class="dl-pct pct-amarelo">1,75%</div>
+      <div class="dl-val des">− R$ 350</div>
+    </div>
+    <div class="dre-linha">
+      <div class="dl-icon">🚗</div>
+      <div class="dl-nome dim">Logística / reposição (combustível)</div>
+      <div class="dl-pct pct-cinza">0,88%</div>
+      <div class="dl-val des">− R$ 175</div>
+    </div>
+
+    <!-- IMPOSTOS -->
+    <div class="dre-linha grupo"><div class="grupo-label">Impostos</div></div>
+    <div class="dre-linha">
+      <div class="dl-icon">🏛️</div>
+      <div class="dl-nome dim">DAS — Simples Nacional Anexo I (~5,32%)</div>
+      <div class="dl-pct pct-vermelho">5,32%</div>
+      <div class="dl-val des">− R$ 1.064</div>
+    </div>
+
+    <!-- EBITDA -->
+    <div class="dre-linha total-parcial">
+      <div class="dl-icon"></div>
+      <div class="dl-nome bold">Resultado Operacional (EBITDA)</div>
+      <div class="dl-pct pct-verde">22,7%</div>
+      <div class="dl-val rec">R$ 4.546</div>
+    </div>
+
+    <!-- LUCRO FINAL -->
+    <div class="dre-linha total-final">
+      <div class="dl-icon">✅</div>
+      <div class="dl-nome bold" style="font-size:15px">LUCRO LÍQUIDO MENSAL</div>
+      <div class="dl-pct pct-verde" style="font-size:13px;padding:4px 10px">22,7%</div>
+      <div class="dl-val big">R$ 4.546</div>
+    </div>
+
+  </div>
+
+  <!-- BARRA COMPOSIÇÃO -->
+  <div class="barra-section">
+    <div class="barra-titulo">Composição do faturamento</div>
+    <div class="barra-wrap">
+      <div class="barra-item">
+        <div class="barra-top">
+          <div class="barra-nome">🛒 CMV — Custo mercadoria</div>
+          <div class="barra-info">R$ 12.000 · 60%</div>
+        </div>
+        <div class="barra-bg"><div class="barra-fill" style="width:60%; background:#ff4d4d;"></div></div>
+      </div>
+      <div class="barra-item">
+        <div class="barra-top">
+          <div class="barra-nome">⚙️ Despesas operacionais</div>
+          <div class="barra-info">R$ 1.590 · 7,95%</div>
+        </div>
+        <div class="barra-bg"><div class="barra-fill" style="width:7.95%; background:#f5c542;"></div></div>
+      </div>
+      <div class="barra-item">
+        <div class="barra-top">
+          <div class="barra-nome">📋 Despesas administrativas</div>
+          <div class="barra-info">R$ 800 · 4,0%</div>
+        </div>
+        <div class="barra-bg"><div class="barra-fill" style="width:4%; background:#4da6ff;"></div></div>
+      </div>
+      <div class="barra-item">
+        <div class="barra-top">
+          <div class="barra-nome">🏛️ Impostos (DAS)</div>
+          <div class="barra-info">R$ 1.064 · 5,32%</div>
+        </div>
+        <div class="barra-bg"><div class="barra-fill" style="width:5.32%; background:#ff8c42;"></div></div>
+      </div>
+      <div class="barra-item">
+        <div class="barra-top">
+          <div class="barra-nome" style="color:var(--verde); font-weight:600">✅ Lucro líquido</div>
+          <div class="barra-info" style="color:var(--verde)">R$ 4.546 · 22,7%</div>
+        </div>
+        <div class="barra-bg"><div class="barra-fill" style="width:22.7%; background:var(--verde);"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENÁRIOS -->
+  <div class="barra-titulo">Comparativo de cenários de faturamento</div>
+  <div class="cenarios">
+
+    <div class="cenario-card">
+      <div class="cen-label">Cenário conservador</div>
+      <div class="cen-fat">R$ 12.000/mês</div>
+      <div class="cen-linha"><span class="cen-k">CMV (60%)</span><span class="cen-v r">− R$ 7.200</span></div>
+      <div class="cen-linha"><span class="cen-k">Despesas fixas</span><span class="cen-v r">− R$ 1.690</span></div>
+      <div class="cen-linha"><span class="cen-k">Energia (3%)</span><span class="cen-v r">− R$ 360</span></div>
+      <div class="cen-linha"><span class="cen-k">DAS (4,00%)</span><span class="cen-v r">− R$ 480</span></div>
+      <hr class="cen-divider">
+      <div class="cen-lucro"><span>Lucro</span><span class="cen-lucro-val" style="color:var(--amarelo)">R$ 2.270</span></div>
+      <div style="font-size:11px;color:var(--texto2);margin-top:4px">margem: 18,9%</div>
+    </div>
+
+    <div class="cenario-card atual">
+      <div class="cen-label ativo">▶ Cenário base (você)</div>
+      <div class="cen-fat" style="color:var(--verde)">R$ 20.000/mês</div>
+      <div class="cen-linha"><span class="cen-k">CMV (60%)</span><span class="cen-v r">− R$ 12.000</span></div>
+      <div class="cen-linha"><span class="cen-k">Despesas fixas</span><span class="cen-v r">− R$ 1.965</span></div>
+      <div class="cen-linha"><span class="cen-k">Energia (3%)</span><span class="cen-v r">− R$ 600</span></div>
+      <div class="cen-linha"><span class="cen-k">DAS (5,32%)</span><span class="cen-v r">− R$ 1.064</span></div>
+      <hr class="cen-divider">
+      <div class="cen-lucro"><span>Lucro</span><span class="cen-lucro-val" style="color:var(--verde)">R$ 4.546</span></div>
+      <div style="font-size:11px;color:var(--verde);margin-top:4px">margem: 22,7%</div>
+    </div>
+
+    <div class="cenario-card">
+      <div class="cen-label">Cenário otimista</div>
+      <div class="cen-fat">R$ 30.000/mês</div>
+      <div class="cen-linha"><span class="cen-k">CMV (60%)</span><span class="cen-v r">− R$ 18.000</span></div>
+      <div class="cen-linha"><span class="cen-k">Despesas fixas</span><span class="cen-v r">− R$ 1.715</span></div>
+      <div class="cen-linha"><span class="cen-k">Energia (3%)</span><span class="cen-v r">− R$ 900</span></div>
+      <div class="cen-linha"><span class="cen-k">DAS (~6,04%)</span><span class="cen-v r">− R$ 1.812</span></div>
+      <hr class="cen-divider">
+      <div class="cen-lucro"><span>Lucro</span><span class="cen-lucro-val" style="color:var(--verde)">R$ 7.573</span></div>
+      <div style="font-size:11px;color:var(--texto2);margin-top:4px">margem: 25,2%</div>
+    </div>
+
+  </div>
+
+  <!-- PAYBACK -->
+  <div class="payback-card">
+    <div class="pb-titulo">📈 Evolução do payback — investimento médio R$ 33.000</div>
+    <div class="pb-linha">
+      <div class="pb-mes">Mês 1</div>
+      <div class="pb-barra-bg"><div class="pb-barra-fill" style="width:13.8%"></div></div>
+      <div class="pb-val neg">− R$ 28.454</div>
+    </div>
+    <div class="pb-linha">
+      <div class="pb-mes">Mês 2</div>
+      <div class="pb-barra-bg"><div class="pb-barra-fill" style="width:27.6%"></div></div>
+      <div class="pb-val neg">− R$ 23.908</div>
+    </div>
+    <div class="pb-linha">
+      <div class="pb-mes">Mês 3</div>
+      <div class="pb-barra-bg"><div class="pb-barra-fill" style="width:41.4%"></div></div>
+      <div class="pb-val neg">− R$ 19.362</div>
+    </div>
+    <div class="pb-linha">
+      <div class="pb-mes">Mês 4</div>
+      <div class="pb-barra-bg"><div class="pb-barra-fill" style="width:55.1%"></div></div>
+      <div class="pb-val neg">− R$ 14.816</div>
+    </div>
+    <div class="pb-linha">
+      <div class="pb-mes">Mês 5</div>
+      <div class="pb-barra-bg"><div class="pb-barra-fill" style="width:68.9%"></div></div>
+      <div class="pb-val neg">− R$ 10.270</div>
+    </div>
+    <div class="pb-linha">
+      <div class="pb-mes">Mês 6</div>
+      <div class="pb-barra-bg"><div class="pb-barra-fill" style="width:82.7%"></div></div>
+      <div class="pb-val neg">− R$ 5.724</div>
+    </div>
+    <div class="pb-linha">
+      <div class="pb-mes">Mês 7</div>
+      <div class="pb-barra-bg"><div class="pb-barra-fill" style="width:96.5%"></div></div>
+      <div class="pb-val neg">− R$ 1.178</div>
+    </div>
+    <div class="pb-linha">
+      <div class="pb-mes">Mês 8</div>
+      <div class="pb-barra-bg"><div class="pb-barra-fill" style="width:100%"></div></div>
+      <div class="pb-val pos">+ R$ 3.368</div>
+    </div>
+    <div class="pb-marco">🎯 Ponto de equilíbrio atingido no 8º mês com faturamento estável de R$ 20.000/mês</div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="alertas">
+    <div class="alerta g">
+      <div class="al-t">✅ Margem saudável</div>
+      <div class="al-tx">24,1% de margem líquida é competitivo para o varejo alimentar, que tipicamente fica entre 15–25% no modelo autônomo sem funcionários.</div>
+    </div>
+    <div class="alerta a">
+      <div class="al-t">⚠️ CMV é o maior risco</div>
+      <div class="al-tx">O custo da mercadoria (60%) é o maior impacto. Cada 1% ganho em negociação com fornecedores = R$ 200/mês a mais de lucro.</div>
+    </div>
+    <div class="alerta r">
+      <div class="al-t">🔺 Ponto de equilíbrio</div>
+      <div class="al-tx">O break-even mensal é atingido com faturamento mínimo de ~R$ 4.300/mês. Abaixo disso, o negócio opera no prejuízo.</div>
+    </div>
+    <div class="alerta g">
+      <div class="al-t">📊 Escala rápida</div>
+      <div class="al-tx">Dobrar o faturamento para R$ 40k praticamente não aumenta custos fixos. A margem tende a melhorar com o crescimento.</div>
+    </div>
+  </div>
+
+  <div class="rodape">
+    CMV estimado em 60% do faturamento — típico para varejo alimentar de conveniência. Valores médios das faixas de custo levantadas anteriormente.<br>
+    Impostos calculados com alíquota efetiva Simples Nacional Anexo I para faturamento anual de R$ 240k. Consulte um contador para simulação precisa.
+  </div>
+
+</div>
+</body>
+</html>

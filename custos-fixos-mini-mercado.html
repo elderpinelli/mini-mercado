@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custos Fixos Mensais — Mini Mercado Autônomo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --bg2: #ede8dc;
+    --card: #ffffff;
+    --tinta: #1a1410;
+    --tinta2: #5a5048;
+    --verde: #1a7a4a;
+    --verde-claro: #e8f5ee;
+    --vermelho: #c0392b;
+    --vermelho-claro: #fdf0ef;
+    --amarelo: #e8a020;
+    --amarelo-claro: #fef8ee;
+    --azul: #1a4a7a;
+    --azul-claro: #e8f0f8;
+    --borda: #d8d0c4;
+    --sombra: 0 2px 12px rgba(26,20,16,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background: var(--bg);
+    color: var(--tinta);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--tinta);
+    color: #f5f0e8;
+    padding: 44px 32px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: 'R$';
+    position: absolute;
+    right: -10px; top: -20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 180px;
+    color: rgba(255,255,255,0.04);
+    pointer-events: none;
+    line-height: 1;
+  }
+  .htag {
+    display: inline-block;
+    border: 1px solid rgba(245,240,232,0.25);
+    color: rgba(245,240,232,0.6);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 7vw, 64px);
+    line-height: 1;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  header h1 span { color: #7ec89a; }
+  header p { font-size: 14px; color: rgba(245,240,232,0.55); max-width: 480px; line-height: 1.6; }
+
+  /* TOTAL STRIP */
+  .total-strip {
+    background: var(--verde);
+    color: white;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1px;
+  }
+  .strip-item {
+    padding: 18px 20px;
+    background: var(--verde);
+    text-align: center;
+  }
+  .strip-item + .strip-item { border-left: 1px solid rgba(255,255,255,0.15); }
+  .strip-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; opacity: .7; margin-bottom: 4px; }
+  .strip-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1px; }
+
+  /* WRAPPER */
+  .wrap { padding: 28px 28px 0; max-width: 900px; }
+
+  /* BLOCO TÍTULO */
+  .bloco-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--tinta2);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--borda);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* CARD CUSTO */
+  .custo-lista { margin-bottom: 28px; }
+  .custo-item {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    box-shadow: var(--sombra);
+    transition: transform .15s;
+  }
+  .custo-item:hover { transform: translateX(3px); }
+  .custo-nome {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--tinta);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ci { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .custo-desc { font-size: 12px; color: var(--tinta2); margin-top: 2px; }
+  .custo-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: .5px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .custo-faixa { font-size: 11px; color: var(--tinta2); text-align: right; margin-top: 1px; }
+
+  /* SUBTOTAL */
+  .subtotal {
+    background: var(--bg2);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  .st-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--tinta2); }
+  .st-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--tinta); }
+
+  /* BLOCO IMPOSTOS */
+  .imposto-card {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    box-shadow: var(--sombra);
+  }
+  .ic-header {
+    background: var(--tinta);
+    color: #f5f0e8;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ic-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1.5px; }
+  .ic-badge {
+    background: var(--verde);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: .5px;
+  }
+  .ic-body { padding: 0; }
+  .imposto-linha {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--borda);
+    font-size: 14px;
+  }
+  .imposto-linha:last-child { border-bottom: none; }
+  .imposto-linha:hover { background: var(--bg); }
+  .il-nome { font-weight: 500; }
+  .il-aliq {
+    background: var(--amarelo-claro);
+    color: var(--amarelo);
+    font-weight: 700;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .il-val { font-family: 'Bebas Neue', sans-serif; font-size: 16px; text-align: right; }
+
+  /* TABELA SIMPLES */
+  .simples-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 28px;
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--sombra);
+  }
+  .simples-table th {
+    background: var(--tinta);
+    color: #f5f0e8;
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+  }
+  .simples-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--borda);
+    color: var(--tinta);
+  }
+  .simples-table tr:last-child td { border-bottom: none; }
+  .simples-table tr:hover td { background: var(--bg); }
+  .simples-table tr.ativo td { background: var(--verde-claro); font-weight: 600; }
+  .simples-table tr.ativo td:first-child::after { content: ' ← você'; font-size: 10px; color: var(--verde); font-weight: 700; }
+  .aliq-badge {
+    background: var(--verde-claro);
+    color: var(--verde);
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+
+  /* SIMULADOR VISUAL */
+  .simulador {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 28px;
+    box-shadow: var(--sombra);
+  }
+  .sim-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 16px; }
+  .sim-item {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .sim-fat { font-size: 12px; color: var(--tinta2); margin-bottom: 4px; }
+  .sim-aliq { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--verde); }
+  .sim-imposto { font-size: 12px; color: var(--tinta2); margin-top: 2px; }
+  .sim-val { font-weight: 700; color: var(--tinta); }
+
+  /* TOTAL FINAL */
+  .total-final {
+    background: var(--tinta);
+    color: #f5f0e8;
+    border-radius: 14px;
+    padding: 24px 24px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 20px rgba(26,20,16,0.2);
+  }
+  .tf-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; margin-bottom: 6px; }
+  .tf-sub { font-size: 13px; color: rgba(245,240,232,0.55); line-height: 1.5; }
+  .tf-valores { text-align: right; }
+  .tf-label { font-size: 11px; color: rgba(245,240,232,0.5); letter-spacing: 1px; text-transform: uppercase; }
+  .tf-val { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: #7ec89a; }
+  .tf-val2 { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: rgba(245,240,232,0.6); }
+
+  /* ALERTAS */
+  .alertas { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .alerta {
+    border-radius: 10px;
+    padding: 14px 16px;
+    border-left: 4px solid;
+  }
+  .alerta.verde { background: var(--verde-claro); border-color: var(--verde); }
+  .alerta.amarelo { background: var(--amarelo-claro); border-color: var(--amarelo); }
+  .alerta.vermelho { background: var(--vermelho-claro); border-color: var(--vermelho); }
+  .alerta-titulo { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+  .alerta.verde .alerta-titulo { color: var(--verde); }
+  .alerta.amarelo .alerta-titulo { color: var(--amarelo); }
+  .alerta.vermelho .alerta-titulo { color: var(--vermelho); }
+  .alerta-txt { font-size: 13px; color: var(--tinta2); line-height: 1.5; }
+
+  .rodape {
+    margin: 0 28px;
+    padding: 14px;
+    background: var(--bg2);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--tinta2);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 580px) {
+    header { padding: 32px 20px 28px; }
+    .wrap { padding: 20px 16px 0; }
+    .custo-item { grid-template-columns: 1fr; gap: 6px; }
+    .total-final { grid-template-columns: 1fr; }
+    .tf-valores { text-align: left; }
+    .simples-table th, .simples-table td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htag">Marca Própria · 2026</div>
+  <h1>Custo Fixo <span>Mensal</span></h1>
+  <p>Visão completa dos gastos mensais fixos de um mini mercado autônomo, incluindo impostos pelo Simples Nacional — Anexo I (Comércio).</p>
+</header>
+
+<div class="total-strip">
+  <div class="strip-item"><div class="strip-label">Fixo sem impostos</div><div class="strip-val">R$ 730 – 1.850</div></div>
+  <div class="strip-item"><div class="strip-label">Energia (3% fat.)</div><div class="strip-val">ex: R$ 600 (20k)</div></div>
+  <div class="strip-item"><div class="strip-label">Impostos (ex. 20k/mês)</div><div class="strip-val">≈ R$ 800 – 1.064</div></div>
+  <div class="strip-item"><div class="strip-label">Regime tributário</div><div class="strip-val">Simples I</div></div>
+</div>
+
+<div class="wrap">
+
+  <!-- OPERAÇÃO -->
+  <div style="margin-top:28px">
+    <div class="bloco-titulo">🏪 Operação & Infraestrutura</div>
+    <div class="custo-lista">
+
+      <div class="custo-item">
+        <div>
+          <div class="custo-nome"><div class="ci" style="background:#e8f0f8">🌐</div>Internet banda larga</div>
+          <div class="custo-desc">Conexão dedicada para o sistema e câmeras</div>
+        </div>
+        <div>
+          <div class="custo-val" style="color:var(--azul)">R$ 100–200</div>
+          <div class="custo-faixa">por mês</div>
+        </div>
+      </div>
+
+      <div class="custo-item">
+        <div>
+          <div class="custo-nome"><div class="ci" style="background:#fff8e8">💡</div>Energia elétrica</div>
+          <div class="custo-desc">Iluminação LED + refrigerador 24h — estimado em 3% do faturamento bruto mensal</div>
+        </div>
+        <div>
+          <div class="custo-val" style="color:var(--amarelo)">3% do fat.</div>
+          <div class="custo-faixa">ex: R$20k → R$ 600</div>
+        </div>
+      </div>
+
+      <div class="custo-item">
+        <div>
+          <div class="custo-nome"><div class="ci" style="background:#e8f5ee">☁️</div>Software de gestão (SaaS)</div>
+          <div class="custo-desc">Plataforma de controle de estoque, vendas e câmeras</div>
+        </div>
+        <div>
+          <div class="custo-val" style="color:var(--verde)">R$ 100–400</div>
+          <div class="custo-faixa">por mês</div>
+        </div>
+      </div>
+
+      <div class="custo-item">
+        <div>
+          <div class="custo-nome"><div class="ci" style="background:#f5f0e8">🔧</div>Manutenção equipamentos</div>
+          <div class="custo-desc">Preventiva de câmeras, totem, refrigerador e acesso</div>
+        </div>
+        <div>
+          <div class="custo-val" style="color:var(--tinta2)">R$ 100–300</div>
+          <div class="custo-faixa">por mês</div>
+        </div>
+      </div>
+
+      <div class="custo-item">
+        <div>
+          <div class="custo-nome"><div class="ci" style="background:#fdf0ef">🔒</div>Seguro do estabelecimento</div>
+          <div class="custo-desc">Contra roubo, furto, danos e responsabilidade civil</div>
+        </div>
+        <div>
+          <div class="custo-val" style="color:var(--vermelho)">R$ 80–200</div>
+          <div class="custo-faixa">por mês</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="subtotal">
+      <span class="st-label">Subtotal operação</span>
+      <span class="st-val">R$ 380–1.100 + 3% fat.</span>
+    </div>
+  </div>
+
+  <!-- ADMINISTRATIVO -->
+  <div>
+    <div class="bloco-titulo">📋 Administrativo & Financeiro</div>
+    <div class="custo-lista">
+
+      <div class="custo-item">
+        <div>
+          <div class="custo-nome"><div class="ci" style="background:#e8f0f8">💼</div>Contabilidade mensal</div>
+          <div class="custo-desc">Obrigatório para ME — geração de DAS, balanço e obrigações acessórias</div>
+        </div>
+        <div>
+          <div class="custo-val" style="color:var(--azul)">R$ 150–400</div>
+          <div class="custo-faixa">por mês</div>
+        </div>
+      </div>
+
+      <div class="custo-item">
+        <div>
+          <div class="custo-nome"><div class="ci" style="background:#fff8e8">💳</div>Taxa gateway de pagamento</div>
+          <div class="custo-desc">PIX (0%), cartão débito ~1,5%, crédito ~2,5–3,5% por transação</div>
+        </div>
+        <div>
+          <div class="custo-val" style="color:var(--amarelo)">R$ 200–500</div>
+          <div class="custo-faixa">estimado sobre vendas</div>
+        </div>
+      </div>
+
+      <div class="custo-item">
+        <div>
+          <div class="custo-nome"><div class="ci" style="background:#fdf0ef">🚗</div>Logística / reposição</div>
+          <div class="custo-desc">Deslocamento para compra e abastecimento do estoque (combustível)</div>
+        </div>
+        <div>
+          <div class="custo-val" style="color:var(--vermelho)">R$ 100–250</div>
+          <div class="custo-faixa">por mês</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="subtotal">
+      <span class="st-label">Subtotal administrativo</span>
+      <span class="st-val">R$ 350 – 750</span>
+    </div>
+  </div>
+
+  <!-- IMPOSTOS -->
+  <div>
+    <div class="bloco-titulo">🏛️ Impostos — Simples Nacional (Anexo I)</div>
+
+    <div class="imposto-card">
+      <div class="ic-header">
+        <div class="ic-titulo">DAS — Documento de Arrecadação Unificada</div>
+        <div class="ic-badge">Comércio · Anexo I</div>
+      </div>
+      <div class="ic-body">
+        <div class="imposto-linha">
+          <div>
+            <div class="il-nome">IRPJ — Imposto de Renda Pessoa Jurídica</div>
+            <div style="font-size:12px;color:var(--tinta2)">Incide sobre o lucro da empresa</div>
+          </div>
+          <div class="il-aliq">incluso no DAS</div>
+          <div class="il-val">—</div>
+        </div>
+        <div class="imposto-linha">
+          <div>
+            <div class="il-nome">CSLL — Contribuição Social sobre Lucro</div>
+            <div style="font-size:12px;color:var(--tinta2)">Destinada à seguridade social</div>
+          </div>
+          <div class="il-aliq">incluso no DAS</div>
+          <div class="il-val">—</div>
+        </div>
+        <div class="imposto-linha">
+          <div>
+            <div class="il-nome">PIS/Pasep — Programa de Integração Social</div>
+            <div style="font-size:12px;color:var(--tinta2)">Contribuição para fundo dos trabalhadores</div>
+          </div>
+          <div class="il-aliq">incluso no DAS</div>
+          <div class="il-val">—</div>
+        </div>
+        <div class="imposto-linha">
+          <div>
+            <div class="il-nome">COFINS — Contribuição para Financiamento Social</div>
+            <div style="font-size:12px;color:var(--tinta2)">Destinada à saúde, previdência e assistência</div>
+          </div>
+          <div class="il-aliq">incluso no DAS</div>
+          <div class="il-val">—</div>
+        </div>
+        <div class="imposto-linha">
+          <div>
+            <div class="il-nome">ICMS — Imposto sobre Circulação de Mercadorias</div>
+            <div style="font-size:12px;color:var(--tinta2)">Estadual — maior parcela do DAS no comércio (~1,25%)</div>
+          </div>
+          <div class="il-aliq">incluso no DAS</div>
+          <div class="il-val">—</div>
+        </div>
+        <div class="imposto-linha">
+          <div>
+            <div class="il-nome">CPP — Contribuição Previdenciária Patronal</div>
+            <div style="font-size:12px;color:var(--tinta2)">INSS patronal simplificado</div>
+          </div>
+          <div class="il-aliq">incluso no DAS</div>
+          <div class="il-val">—</div>
+        </div>
+        <div style="background:var(--verde-claro);padding:14px 20px;border-top:1px solid var(--borda)">
+          <div style="font-size:12px;font-weight:700;color:var(--verde);margin-bottom:4px">✅ Todos esses impostos são unificados em UMA guia mensal (DAS)</div>
+          <div style="font-size:13px;color:var(--tinta2)">A alíquota total varia de <strong>4% a 19%</strong> sobre o faturamento bruto, de acordo com a faixa de receita anual acumulada.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABELA DE FAIXAS -->
+    <div class="bloco-titulo" style="margin-top:4px">📊 Tabela Anexo I — Faixas de Faturamento 2026</div>
+    <table class="simples-table">
+      <thead>
+        <tr>
+          <th>Faturamento Anual (RBT12)</th>
+          <th>Alíquota Nominal</th>
+          <th>Alíq. Efetiva*</th>
+          <th>Exemplo Mensal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Até R$ 180.000</td>
+          <td><span class="aliq-badge">4,00%</span></td>
+          <td>4,00%</td>
+          <td>R$ 15k → R$ 600</td>
+        </tr>
+        <tr class="ativo">
+          <td>R$ 180.001 – R$ 360.000</td>
+          <td><span class="aliq-badge">7,30%</span></td>
+          <td>≈ 5,32 – 6,84%</td>
+          <td>R$ 20k → R$ 800–1.064</td>
+        </tr>
+        <tr>
+          <td>R$ 360.001 – R$ 720.000</td>
+          <td><span class="aliq-badge">9,50%</span></td>
+          <td>≈ 6,04 – 7,87%</td>
+          <td>R$ 35k → R$ 2.114</td>
+        </tr>
+        <tr>
+          <td>R$ 720.001 – R$ 1.800.000</td>
+          <td><span class="aliq-badge">10,70%</span></td>
+          <td>≈ 8,00 – 9,50%</td>
+          <td>R$ 60k → R$ 4.800</td>
+        </tr>
+        <tr>
+          <td>R$ 1.800.001 – R$ 3.600.000</td>
+          <td><span class="aliq-badge">14,30%</span></td>
+          <td>≈ 11–13%</td>
+          <td>R$ 100k → R$ 11.000</td>
+        </tr>
+        <tr>
+          <td>R$ 3.600.001 – R$ 4.800.000</td>
+          <td><span class="aliq-badge">19,00%</span></td>
+          <td>≈ 14–16%</td>
+          <td>R$ 200k → R$ 28.000</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--tinta2);margin-bottom:20px">* Alíquota efetiva é menor que a nominal devido à parcela dedutível. A faixa destacada representa o faturamento típico de um mini mercado em condomínio de médio porte.</div>
+
+    <!-- SIMULADOR -->
+    <div class="simulador">
+      <div class="bloco-titulo" style="margin-bottom:4px; border:none; padding:0">💡 Simulação de Imposto por Faturamento</div>
+      <div style="font-size:13px;color:var(--tinta2);margin-bottom:4px">Estimativa do DAS mensal para um mini mercado marca própria (Anexo I):</div>
+      <div class="sim-grid">
+        <div class="sim-item">
+          <div class="sim-fat">Faturando R$ 10.000/mês</div>
+          <div class="sim-aliq">4,00%</div>
+          <div class="sim-imposto">DAS mensal: <span class="sim-val">R$ 400</span></div>
+        </div>
+        <div class="sim-item" style="background:var(--verde-claro)">
+          <div class="sim-fat">Faturando R$ 20.000/mês</div>
+          <div class="sim-aliq">≈ 5,32%</div>
+          <div class="sim-imposto">DAS mensal: <span class="sim-val">R$ 800–1.064</span></div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-fat">Faturando R$ 35.000/mês</div>
+          <div class="sim-aliq">≈ 6,04%</div>
+          <div class="sim-imposto">DAS mensal: <span class="sim-val">≈ R$ 2.114</span></div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-fat">Faturando R$ 50.000/mês</div>
+          <div class="sim-aliq">≈ 7,50%</div>
+          <div class="sim-imposto">DAS mensal: <span class="sim-val">≈ R$ 3.750</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TOTAL FINAL -->
+  <div class="total-final">
+    <div>
+      <div class="tf-titulo">Total Custo Fixo Mensal</div>
+      <div class="tf-sub">Operação + Administrativo + Impostos + Energia (3% fat.)<br>Baseado em faturamento de R$ 20.000/mês · Sem funcionários</div>
+    </div>
+    <div class="tf-valores">
+      <div class="tf-label">Cenário mínimo</div>
+      <div class="tf-val">≈ R$ 2.130</div>
+      <div class="tf-label" style="margin-top:8px">Cenário máximo</div>
+      <div class="tf-val2">≈ R$ 3.514</div>
+    </div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="bloco-titulo">⚠️ Pontos de Atenção</div>
+  <div class="alertas">
+    <div class="alerta verde">
+      <div class="alerta-titulo">✅ Vantagem marca própria</div>
+      <div class="alerta-txt">Sem taxa de franquia nem royalties mensais. Toda a margem fica com você. Custo mensal significativamente menor que franquias.</div>
+    </div>
+    <div class="alerta amarelo">
+      <div class="alerta-titulo">⚡ Reforma tributária 2026</div>
+      <div class="alerta-txt">Em 2026 o Simples foi mantido intacto. A CBS/IBS ainda está em alíquota simbólica de 1% para teste. Mudanças relevantes entram a partir de 2027.</div>
+    </div>
+    <div class="alerta vermelho">
+      <div class="alerta-titulo">❌ Não esqueça</div>
+      <div class="alerta-txt">Taxa do gateway de pagamento incide sobre cada venda e é variável. Cartão crédito pode chegar a 3,5% por transação — negocie a maquininha.</div>
+    </div>
+    <div class="alerta verde">
+      <div class="alerta-titulo">💡 MEI vs ME</div>
+      <div class="alerta-txt">MEI é gratuito mas limitado a R$ 81k/ano (≈ R$ 6,7k/mês). Para um mini mercado viável, registrar como ME no Simples Nacional é o ideal.</div>
+    </div>
+    <div class="alerta amarelo">
+      <div class="alerta-titulo">📊 Controle de estoque</div>
+      <div class="alerta-txt">A reposição de estoque (R$ 2–4k/mês) é custo variável, não fixo. Não foi incluído neste total para manter o foco nos custos realmente fixos.</div>
+    </div>
+    <div class="alerta vermelho">
+      <div class="alerta-titulo">🏛️ Obrigações acessórias</div>
+      <div class="alerta-txt">Além do DAS, a ME precisa entregar DEFIS anualmente. O contador mensal já deve cuidar disso — confira o que está incluído no contrato.</div>
+    </div>
+  </div>
+
+  <div class="rodape">
+    ⚠️ Estimativas baseadas em dados de mercado e tabelas do Simples Nacional vigentes em 2026. Alíquotas e obrigações variam por estado e município.<br>
+    Consulte sempre um contador antes de tomar decisões financeiras ou tributárias.
+  </div>
+
+</div>
+</body>
+</html>

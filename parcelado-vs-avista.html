@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise: À Vista vs Parcelado — Mini Mercado</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f2;
+    --bg2: #ede9e2;
+    --card: #ffffff;
+    --tinta: #18120a;
+    --tinta2: #6b5c48;
+    --tinta3: #a8998a;
+    --verde: #1e6b3c;
+    --verde-bg: #e6f4ec;
+    --vermelho: #b52a1c;
+    --vermelho-bg: #fcecea;
+    --amarelo: #8a6200;
+    --amarelo-bg: #fef5dc;
+    --azul: #1a3f6b;
+    --azul-bg: #e4edf8;
+    --laranja: #b84a00;
+    --laranja-bg: #fdeee4;
+    --borda: #ddd6cc;
+    --sombra: 0 2px 14px rgba(24,18,10,0.07);
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--tinta); font-family: var(--sans); padding-bottom: 60px; }
+
+  /* HEADER */
+  header {
+    background: var(--tinta);
+    color: #f7f5f2;
+    padding: 44px 32px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 60px,
+      rgba(255,255,255,0.02) 60px,
+      rgba(255,255,255,0.02) 61px
+    );
+    pointer-events: none;
+  }
+  .htag {
+    display: inline-block;
+    border: 1px solid rgba(247,245,242,0.2);
+    color: rgba(247,245,242,0.5);
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 2px;
+    padding: 4px 12px; border-radius: 4px; margin-bottom: 18px;
+  }
+  header h1 {
+    font-family: var(--mono);
+    font-size: clamp(24px, 4.5vw, 40px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+  header h1 .g { color: #7ecf9a; }
+  header h1 .r { color: #f08070; }
+  header p { font-size: 13px; color: rgba(247,245,242,0.5); max-width: 520px; line-height: 1.6; }
+
+  /* AVISO */
+  .aviso {
+    background: var(--amarelo-bg);
+    border-left: 4px solid var(--amarelo);
+    padding: 12px 20px;
+    font-size: 13px;
+    color: var(--amarelo);
+    line-height: 1.6;
+  }
+  .aviso strong { font-weight: 700; }
+
+  .wrap { padding: 28px 28px 0; max-width: 980px; }
+
+  /* SEÇÃO TÍTULO */
+  .st {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--tinta3);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .st::after { content: ''; flex: 1; height: 1px; background: var(--borda); }
+
+  /* TABELA CLASSIFICAÇÃO */
+  .class-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--borda);
+    box-shadow: var(--sombra);
+    margin-bottom: 28px;
+    font-size: 13px;
+  }
+  .class-table th {
+    background: var(--tinta);
+    color: #f7f5f2;
+    padding: 11px 16px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+  }
+  .class-table td { padding: 12px 16px; border-bottom: 1px solid var(--bg2); vertical-align: middle; }
+  .class-table tr:last-child td { border-bottom: none; }
+  .class-table tr:hover td { background: var(--bg); }
+  .class-table tr.subtotal td { background: var(--bg2); font-weight: 700; font-family: var(--mono); }
+  .tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 4px;
+    white-space: nowrap;
+    font-family: var(--mono);
+  }
+  .tag-sim { background: var(--verde-bg); color: var(--verde); }
+  .tag-nao { background: var(--vermelho-bg); color: var(--vermelho); }
+  .tag-parc { background: var(--azul-bg); color: var(--azul); }
+  .motivo { font-size: 11px; color: var(--tinta3); margin-top: 2px; }
+  .valor-cell { font-family: var(--mono); font-weight: 600; text-align: right; white-space: nowrap; }
+
+  /* COMPARATIVO */
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  @media(max-width:640px){ .comp-grid { grid-template-columns: 1fr; } }
+
+  .comp-card {
+    background: var(--card);
+    border: 2px solid var(--borda);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--sombra);
+  }
+  .comp-card.melhor { border-color: var(--verde); }
+  .comp-card.pior { border-color: #ddd6cc; }
+
+  .comp-header {
+    padding: 16px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .comp-card.melhor .comp-header { background: var(--verde-bg); }
+  .comp-card.pior .comp-header { background: var(--bg2); }
+  .comp-titulo { font-family: var(--mono); font-size: 14px; font-weight: 700; }
+  .comp-card.melhor .comp-titulo { color: var(--verde); }
+  .comp-badge {
+    font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 4px;
+    font-family: var(--mono);
+  }
+  .badge-melhor { background: var(--verde); color: white; }
+  .badge-neutro { background: var(--tinta3); color: white; }
+
+  .comp-body { padding: 18px 20px; }
+  .comp-linha {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--bg2);
+    font-size: 13px;
+  }
+  .comp-linha:last-child { border-bottom: none; }
+  .cl-k { color: var(--tinta2); }
+  .cl-v { font-family: var(--mono); font-weight: 600; }
+  .cl-v.g { color: var(--verde); }
+  .cl-v.r { color: var(--vermelho); }
+  .cl-v.a { color: var(--amarelo); }
+  .comp-total {
+    background: var(--bg2);
+    padding: 14px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 2px solid var(--borda);
+  }
+  .comp-card.melhor .comp-total { background: var(--verde-bg); border-color: var(--verde); }
+  .ct-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--tinta2); }
+  .ct-val { font-family: var(--mono); font-size: 22px; font-weight: 700; }
+  .comp-card.melhor .ct-val { color: var(--verde); }
+
+  /* FLUXO DE CAIXA */
+  .fluxo-card {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    box-shadow: var(--sombra);
+  }
+  .fluxo-header {
+    background: var(--tinta);
+    color: #f7f5f2;
+    padding: 14px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono);
+    font-size: 13px; font-weight: 700;
+  }
+  .fluxo-sub { font-size: 11px; opacity: .5; }
+
+  .fluxo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .fluxo-table th {
+    background: var(--bg2);
+    padding: 9px 14px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--tinta2);
+    border-bottom: 1px solid var(--borda);
+  }
+  .fluxo-table th:first-child { text-align: left; }
+  .fluxo-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--bg2);
+    text-align: center;
+    font-family: var(--mono);
+  }
+  .fluxo-table td:first-child { text-align: left; font-family: var(--sans); font-size: 13px; color: var(--tinta2); }
+  .fluxo-table tr:last-child td { border-bottom: none; font-weight: 700; font-size: 13px; }
+  .fluxo-table tr.saldo td { background: var(--bg2); font-weight: 700; }
+  .fluxo-table tr.saldo-pos td { background: var(--verde-bg); color: var(--verde); font-weight: 700; }
+  .fluxo-table tr.separador td { background: var(--bg2); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--tinta3); font-family: var(--mono); padding: 6px 14px; }
+  .num-pos { color: var(--verde); }
+  .num-neg { color: var(--vermelho); }
+  .num-neu { color: var(--tinta); }
+  .num-dim { color: var(--tinta3); }
+
+  /* VEREDITO */
+  .veredito {
+    background: var(--tinta);
+    color: #f7f5f2;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media(max-width:580px){ .veredito { grid-template-columns: 1fr; } }
+  .v-titulo { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(247,245,242,0.4); margin-bottom: 10px; }
+  .v-texto { font-size: 14px; line-height: 1.7; color: rgba(247,245,242,0.85); }
+  .v-destaque { color: #7ecf9a; font-weight: 600; }
+  .v-alerta { color: #f08070; font-weight: 600; }
+
+  /* ALERTAS */
+  .alertas { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 28px; }
+  .alerta { border-radius: 10px; padding: 14px 16px; border-left: 3px solid; }
+  .alerta.g { background: var(--verde-bg); border-color: var(--verde); }
+  .alerta.r { background: var(--vermelho-bg); border-color: var(--vermelho); }
+  .alerta.a { background: var(--amarelo-bg); border-color: var(--amarelo); }
+  .alerta.b { background: var(--azul-bg); border-color: var(--azul); }
+  .al-t { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; font-family: var(--mono); }
+  .alerta.g .al-t { color: var(--verde); }
+  .alerta.r .al-t { color: var(--vermelho); }
+  .alerta.a .al-t { color: var(--amarelo); }
+  .alerta.b .al-t { color: var(--azul); }
+  .al-tx { font-size: 12px; color: var(--tinta2); line-height: 1.5; }
+
+  .rodape {
+    padding: 14px 20px;
+    background: var(--bg2);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    font-size: 11px; color: var(--tinta3); text-align: center; line-height: 1.6;
+    font-family: var(--mono);
+  }
+
+  @media(max-width:600px){
+    header, .wrap { padding: 24px 16px; }
+    .class-table th:nth-child(3), .class-table td:nth-child(3) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htag">ANÁLISE FINANCEIRA · ABERTURA</div>
+  <h1><span class="g">À Vista</span> vs<br><span class="r">Parcelado</span></h1>
+  <p>Comparativo de impacto no caixa, custo total e payback para abertura do mini mercado autônomo — investimento total estimado R$ 53.000.</p>
+</header>
+
+<div class="aviso">
+  ⚠️ <strong>Importante:</strong> Parcelar no cartão de crédito tem custo zero de juros se pago integralmente. Os juros aparecem apenas se houver rotativo ou parcelamento com juros da operadora. Esta análise considera parcelamento <strong>sem juros</strong> (compras no crédito quitadas no vencimento).
+</div>
+
+<div class="wrap">
+
+<!-- CLASSIFICAÇÃO DOS ITENS -->
+<div class="st">O que dá pra parcelar no cartão?</div>
+<table class="class-table">
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Valor</th>
+      <th>Parcela no cartão?</th>
+      <th>Motivo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- PODE PARCELAR -->
+    <tr>
+      <td><strong>Geladeira bebidas (Metalfrio)</strong></td>
+      <td class="valor-cell">R$ 4.500</td>
+      <td><span class="tag tag-sim">✅ SIM</span></td>
+      <td><div class="motivo">Compra em loja física ou e-commerce — aceita cartão</div></td>
+    </tr>
+    <tr>
+      <td><strong>Freezer congelados</strong></td>
+      <td class="valor-cell">R$ 3.500</td>
+      <td><span class="tag tag-sim">✅ SIM</span></td>
+      <td><div class="motivo">Lojas de equipamentos — aceita cartão em até 12x</div></td>
+    </tr>
+    <tr>
+      <td><strong>Geladeira cervejas (-4,6°C)</strong></td>
+      <td class="valor-cell">R$ 5.000</td>
+      <td><span class="tag tag-sim">✅ SIM</span></td>
+      <td><div class="motivo">Equipamento comercial — fornecedor aceita cartão</div></td>
+    </tr>
+    <tr>
+      <td><strong>Totem PDV / autoatendimento</strong></td>
+      <td class="valor-cell">R$ 5.000</td>
+      <td><span class="tag tag-sim">✅ SIM</span></td>
+      <td><div class="motivo">Fornecedor de tecnologia — geralmente aceita cartão</div></td>
+    </tr>
+    <tr>
+      <td><strong>Câmeras / sistema CFTV</strong></td>
+      <td class="valor-cell">R$ 3.500</td>
+      <td><span class="tag tag-sim">✅ SIM</span></td>
+      <td><div class="motivo">Lojas de segurança eletrônica — aceita cartão</div></td>
+    </tr>
+    <tr>
+      <td><strong>Controle de acesso (QR/biometria)</strong></td>
+      <td class="valor-cell">R$ 2.000</td>
+      <td><span class="tag tag-sim">✅ SIM</span></td>
+      <td><div class="motivo">Equipamento eletrônico — aceita cartão</div></td>
+    </tr>
+    <tr>
+      <td><strong>Prateleiras / gôndolas</strong></td>
+      <td class="valor-cell">R$ 4.000</td>
+      <td><span class="tag tag-sim">✅ SIM</span></td>
+      <td><div class="motivo">Lojas de móveis comerciais — aceita cartão</div></td>
+    </tr>
+    <tr>
+      <td><strong>Comunicação visual / letreiro</strong></td>
+      <td class="valor-cell">R$ 2.000</td>
+      <td><span class="tag tag-sim">✅ SIM</span></td>
+      <td><div class="motivo">Gráfica — muitas aceitam cartão</div></td>
+    </tr>
+    <tr>
+      <td><strong>Tablet / computador para gestão</strong></td>
+      <td class="valor-cell">R$ 1.500</td>
+      <td><span class="tag tag-sim">✅ SIM</span></td>
+      <td><div class="motivo">Eletrônico — aceita cartão facilmente</div></td>
+    </tr>
+    <tr class="subtotal">
+      <td>✅ SUBTOTAL PARCELÁVEL</td>
+      <td class="valor-cell" style="color:var(--verde)">R$ 31.000</td>
+      <td colspan="2">— equipamentos e estrutura física</td>
+    </tr>
+    <!-- NÃO PODE PARCELAR -->
+    <tr>
+      <td><strong>Estoque inicial de produtos</strong></td>
+      <td class="valor-cell">R$ 10.000</td>
+      <td><span class="tag tag-nao">❌ NÃO</span></td>
+      <td><div class="motivo">Fornecedores cobram via boleto, PIX ou duplicata — raramente aceitam cartão</div></td>
+    </tr>
+    <tr>
+      <td><strong>Capital de giro (reserva 3 meses)</strong></td>
+      <td class="valor-cell">R$ 7.000</td>
+      <td><span class="tag tag-nao">❌ NÃO</span></td>
+      <td><div class="motivo">Precisa estar disponível em conta corrente para pagamentos do dia a dia</div></td>
+    </tr>
+    <tr>
+      <td><strong>Reforma / instalação elétrica</strong></td>
+      <td class="valor-cell">R$ 3.000</td>
+      <td><span class="tag tag-nao">❌ NÃO</span></td>
+      <td><div class="motivo">Mão de obra — pedreiro/eletricista cobram em espécie ou PIX</div></td>
+    </tr>
+    <tr>
+      <td><strong>Licenças e regularização (alvará, CNPJ, vigilância)</strong></td>
+      <td class="valor-cell">R$ 2.000</td>
+      <td><span class="tag tag-nao">❌ NÃO</span></td>
+      <td><div class="motivo">Taxas públicas e honorários — pagas via boleto ou GRU</div></td>
+    </tr>
+    <tr class="subtotal">
+      <td>❌ SUBTOTAL À VISTA OBRIGATÓRIO</td>
+      <td class="valor-cell" style="color:var(--vermelho)">R$ 22.000</td>
+      <td colspan="2">— precisa ter em caixa no dia da abertura</td>
+    </tr>
+    <tr class="subtotal" style="background:var(--tinta); color:#f7f5f2">
+      <td style="color:#f7f5f2; font-family:var(--mono)">TOTAL GERAL ABERTURA</td>
+      <td class="valor-cell" style="color:#7ecf9a">R$ 53.000</td>
+      <td colspan="2" style="color:rgba(247,245,242,0.5); font-family:var(--sans); font-size:12px">investimento estimado para abertura completa</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- COMPARATIVO -->
+<div class="st">Comparativo: À Vista vs Parcelado (12x sem juros)</div>
+<div class="comp-grid">
+
+  <!-- PARCELADO -->
+  <div class="comp-card melhor">
+    <div class="comp-header">
+      <div class="comp-titulo">💳 Parcelado em 12x</div>
+      <div class="comp-badge badge-melhor">RECOMENDADO</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-linha">
+        <span class="cl-k">Desembolso inicial (à vista obrigatório)</span>
+        <span class="cl-v r">R$ 22.000</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Parcela mensal dos equipamentos (12x)</span>
+        <span class="cl-v a">R$ 2.583</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Custo total dos equipamentos</span>
+        <span class="cl-v">R$ 31.000</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Juros pagos (sem juros no cartão)</span>
+        <span class="cl-v g">R$ 0</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Custo total de abertura</span>
+        <span class="cl-v">R$ 53.000</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Caixa necessário no dia 1</span>
+        <span class="cl-v g">R$ 22.000</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Lucro mensal disponível (mês 1–12)</span>
+        <span class="cl-v a">R$ 4.546 − R$ 2.583 = <strong>R$ 1.963</strong></span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Lucro mensal disponível (após mês 12)</span>
+        <span class="cl-v g">R$ 4.546</span>
+      </div>
+    </div>
+    <div class="comp-total">
+      <div class="ct-label">Payback estimado</div>
+      <div class="ct-val">~16 meses</div>
+    </div>
+  </div>
+
+  <!-- À VISTA -->
+  <div class="comp-card pior">
+    <div class="comp-header">
+      <div class="comp-titulo">💰 À Vista (tudo)</div>
+      <div class="comp-badge badge-neutro">ALTERNATIVA</div>
+    </div>
+    <div class="comp-body">
+      <div class="comp-linha">
+        <span class="cl-k">Desembolso inicial total</span>
+        <span class="cl-v r">R$ 53.000</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Parcela mensal dos equipamentos</span>
+        <span class="cl-v g">R$ 0</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Custo total dos equipamentos</span>
+        <span class="cl-v">R$ 31.000</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Juros pagos</span>
+        <span class="cl-v g">R$ 0</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Custo total de abertura</span>
+        <span class="cl-v">R$ 53.000</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Caixa necessário no dia 1</span>
+        <span class="cl-v r">R$ 53.000</span>
+      </div>
+      <div class="comp-linha">
+        <span class="cl-k">Lucro mensal disponível (desde mês 1)</span>
+        <span class="cl-v g">R$ 4.546</span>
+      </div>
+      <div class="comp-linha" style="opacity:.4">
+        <span class="cl-k">—</span>
+        <span class="cl-v">—</span>
+      </div>
+    </div>
+    <div class="comp-total">
+      <div class="ct-label">Payback estimado</div>
+      <div class="ct-val">~12 meses</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FLUXO DE CAIXA COMPARATIVO -->
+<div class="st">Fluxo de caixa mensal — primeiros 18 meses</div>
+<div class="fluxo-card">
+  <div class="fluxo-header">
+    <span>Evolução do caixa acumulado</span>
+    <span class="fluxo-sub">faturamento R$ 20k/mês · lucro R$ 4.546/mês</span>
+  </div>
+  <div style="overflow-x:auto">
+  <table class="fluxo-table">
+    <thead>
+      <tr>
+        <th>Mês</th>
+        <th>Lucro mensal</th>
+        <th>Parcela cartão</th>
+        <th>Fluxo líquido</th>
+        <th>Acumulado À Vista</th>
+        <th>Acumulado Parcelado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="separador"><td colspan="6">INÍCIO — desembolso inicial</td></tr>
+      <tr>
+        <td>Abertura</td>
+        <td class="num-dim">—</td>
+        <td class="num-dim">—</td>
+        <td class="num-dim">—</td>
+        <td class="num-neg">− R$ 53.000</td>
+        <td class="num-neg">− R$ 22.000</td>
+      </tr>
+      <tr class="separador"><td colspan="6">OPERAÇÃO</td></tr>
+      <tr>
+        <td>Mês 1</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-neg">− R$ 2.583</td>
+        <td class="num-pos">+ R$ 1.963</td>
+        <td class="num-neg">− R$ 48.454</td>
+        <td class="num-neg">− R$ 20.037</td>
+      </tr>
+      <tr>
+        <td>Mês 2</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-neg">− R$ 2.583</td>
+        <td class="num-pos">+ R$ 1.963</td>
+        <td class="num-neg">− R$ 43.908</td>
+        <td class="num-neg">− R$ 18.074</td>
+      </tr>
+      <tr>
+        <td>Mês 3</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-neg">− R$ 2.583</td>
+        <td class="num-pos">+ R$ 1.963</td>
+        <td class="num-neg">− R$ 39.362</td>
+        <td class="num-neg">− R$ 16.111</td>
+      </tr>
+      <tr>
+        <td>Mês 6</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-neg">− R$ 2.583</td>
+        <td class="num-pos">+ R$ 1.963</td>
+        <td class="num-neg">− R$ 25.726</td>
+        <td class="num-neg">− R$ 10.222</td>
+      </tr>
+      <tr>
+        <td>Mês 9</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-neg">− R$ 2.583</td>
+        <td class="num-pos">+ R$ 1.963</td>
+        <td class="num-neg">− R$ 12.090</td>
+        <td class="num-neg">− R$ 4.333</td>
+      </tr>
+      <tr>
+        <td>Mês 12</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-neg">− R$ 2.583</td>
+        <td class="num-pos">+ R$ 1.963</td>
+        <td class="num-pos">+ R$ 1.452</td>
+        <td class="num-neg">− R$ 1.556</td>
+      </tr>
+      <tr class="separador"><td colspan="6">CARTÃO QUITADO — sem mais parcelas a partir do mês 13</td></tr>
+      <tr>
+        <td>Mês 13</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-pos">R$ 0</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-pos">+ R$ 5.998</td>
+        <td class="num-pos">+ R$ 2.990</td>
+      </tr>
+      <tr>
+        <td>Mês 15</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-pos">R$ 0</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-pos">+ R$ 15.090</td>
+        <td class="num-pos">+ R$ 12.082</td>
+      </tr>
+      <tr class="saldo-pos">
+        <td>Mês 18</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-pos">R$ 0</td>
+        <td class="num-pos">+ R$ 4.546</td>
+        <td class="num-pos">+ R$ 28.728</td>
+        <td class="num-pos">+ R$ 25.720</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- VEREDITO -->
+<div class="veredito">
+  <div>
+    <div class="v-titulo">💳 Por que parcelar faz mais sentido</div>
+    <div class="v-texto">
+      Parcelar os R$ 31.000 em equipamentos em <span class="v-destaque">12x sem juros</span> exige apenas R$ 22.000 no dia da abertura — quase R$ 31.000 a menos no bolso. Isso preserva capital de giro, reduz o risco de ficar sem caixa nos primeiros meses e ainda permite usar o lucro mensal para pagar as parcelas.
+      <br><br>
+      O custo total é <span class="v-destaque">idêntico</span> — não há juros no parcelamento sem acréscimo. A única diferença real é <span class="v-destaque">quando você paga</span>.
+    </div>
+  </div>
+  <div>
+    <div class="v-titulo">⚠️ O risco de parcelar</div>
+    <div class="v-texto">
+      Nos meses 1 a 12, seu lucro disponível cai de R$ 4.546 para <span class="v-alerta">R$ 1.963/mês</span> — a parcela de R$ 2.583 compromete 57% do lucro. Se o faturamento cair abaixo de R$ 15k/mês nesse período, o fluxo de caixa pode ficar negativo.
+      <br><br>
+      A <span class="v-alerta">reserva de capital de giro de R$ 7.000</span> existe exatamente para cobrir esses meses de ajuste. Não toque nela.
+    </div>
+  </div>
+</div>
+
+<!-- ALERTAS -->
+<div class="alertas">
+  <div class="alerta g">
+    <div class="al-t">✅ Melhor estratégia</div>
+    <div class="al-tx">Pague à vista o que é obrigatório (R$ 22k) e parcele em 12x sem juros tudo que aceitar cartão. Preserve caixa no início.</div>
+  </div>
+  <div class="alerta b">
+    <div class="al-t">💳 Negocie as parcelas</div>
+    <div class="al-tx">Tente concentrar as compras parceladas no mesmo mês para ter uma única data de vencimento e facilitar o controle.</div>
+  </div>
+  <div class="alerta a">
+    <div class="al-t">⚠️ Nunca use o rotativo</div>
+    <div class="al-tx">Se não conseguir pagar a fatura inteira no vencimento, os juros do rotativo chegam a 15–20%/mês e destroem a margem do negócio.</div>
+  </div>
+  <div class="alerta r">
+    <div class="al-t">🚨 Ponto de atenção</div>
+    <div class="al-tx">Com parcelas de R$ 2.583/mês, seu break-even de faturamento sobe de R$ 4.300 para ~R$ 16.700/mês nos primeiros 12 meses.</div>
+  </div>
+</div>
+
+<div class="rodape">
+  Simulação baseada em faturamento estável de R$ 20.000/mês e lucro líquido de R$ 4.546/mês · Parcelamento considerado sem juros (cartão de crédito quitado integralmente no vencimento)<br>
+  Valores de equipamentos são estimativas — confirme com fornecedores antes de fechar orçamento · Consulte um contador para planejamento financeiro personalizado
+</div>
+
+</div>
+</body>
+</html>
