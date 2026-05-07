@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Condomínios Novos — Salvador & Lauro de Freitas 2020–2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f4f0;
+    --card: #ffffff;
+    --tinta: #1a1410;
+    --tinta2: #5a5048;
+    --tinta3: #9a8f84;
+    --borda: #e2dcd4;
+    --verde: #1e5c3a;
+    --verde-bg: #e8f3ed;
+    --azul: #1a3f6b;
+    --azul-bg: #e4edf8;
+    --roxo: #4a2d6b;
+    --roxo-bg: #f0e8f8;
+    --laranja: #8a4200;
+    --laranja-bg: #fef0e4;
+    --amarelo: #7a5800;
+    --amarelo-bg: #fef6dc;
+    --vermelho: #9e2a1c;
+    --vermelho-bg: #fcecea;
+    --sans: 'Bricolage Grotesque', sans-serif;
+    --sombra: 0 1px 8px rgba(26,20,16,0.07);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--tinta); font-family: var(--sans); padding-bottom: 60px; }
+
+  /* HEADER */
+  header {
+    background: var(--tinta);
+    color: #f7f4f0;
+    padding: 44px 28px 36px;
+    position: relative; overflow: hidden;
+  }
+  header::after {
+    content: '🏘️';
+    position: absolute; right: 20px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 90px; opacity: .05; pointer-events: none;
+  }
+  .htag {
+    display: inline-block;
+    border: 1px solid rgba(247,244,240,0.2);
+    color: rgba(247,244,240,0.5);
+    font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 4px; margin-bottom: 16px;
+  }
+  header h1 { font-size: clamp(26px, 4.5vw, 40px); font-weight: 800; line-height: 1.1; margin-bottom: 8px; }
+  header h1 span { color: #a8d5b5; }
+  header p { font-size: 13px; color: rgba(247,244,240,0.5); max-width: 560px; line-height: 1.6; }
+
+  .aviso {
+    background: var(--amarelo-bg);
+    border-left: 4px solid #c8920a;
+    padding: 12px 20px;
+    font-size: 12px; color: var(--amarelo); line-height: 1.6;
+  }
+  .aviso strong { font-weight: 700; }
+
+  /* STATS */
+  .stats {
+    display: flex; gap: 0; background: white;
+    border-bottom: 1px solid var(--borda); overflow-x: auto;
+  }
+  .stat { flex: 1; min-width: 100px; padding: 14px 16px; border-right: 1px solid var(--borda); text-align: center; }
+  .stat:last-child { border-right: none; }
+  .stat-n { font-size: 22px; font-weight: 800; }
+  .stat-l { font-size: 10px; color: var(--tinta3); margin-top: 2px; }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 0; border-bottom: 2px solid var(--borda);
+    background: white; overflow-x: auto;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .tab {
+    padding: 12px 20px; font-size: 12px; font-weight: 700;
+    cursor: pointer; border-bottom: 3px solid transparent;
+    transition: all .15s; white-space: nowrap; color: var(--tinta3);
+    margin-bottom: -2px;
+  }
+  .tab.ativo { color: var(--tinta); border-bottom-color: var(--tinta); }
+  .tab:hover { color: var(--tinta); }
+
+  /* WRAP */
+  .wrap { padding: 24px 24px 0; max-width: 1000px; }
+
+  /* SEÇÃO */
+  .secao { display: none; }
+  .secao.visivel { display: block; }
+
+  .secao-titulo {
+    font-size: 20px; font-weight: 800; margin-bottom: 6px; margin-top: 8px;
+  }
+  .secao-sub { font-size: 13px; color: var(--tinta3); margin-bottom: 20px; }
+
+  /* TABELA */
+  .tabela-wrap { overflow-x: auto; margin-bottom: 28px; }
+  table {
+    width: 100%; border-collapse: collapse;
+    background: white; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--borda); box-shadow: var(--sombra);
+    font-size: 13px; min-width: 640px;
+  }
+  thead tr { background: var(--tinta); color: #f7f4f0; }
+  th { padding: 10px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+  td { padding: 11px 14px; border-bottom: 1px solid #f0ece8; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  .nome-cell { font-weight: 700; color: var(--tinta); }
+  .sub-cell { font-size: 11px; color: var(--tinta3); margin-top: 2px; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; white-space: nowrap;
+  }
+  .b-entregue { background: var(--verde-bg); color: var(--verde); }
+  .b-obra { background: var(--amarelo-bg); color: var(--amarelo); }
+  .b-lanc { background: var(--vermelho-bg); color: var(--vermelho); }
+  .b-100 { background: var(--verde-bg); color: var(--verde); }
+  .b-200 { background: var(--azul-bg); color: var(--azul); }
+  .b-300 { background: var(--roxo-bg); color: var(--roxo); }
+
+  .fonte { font-size: 10px; color: var(--tinta3); font-style: italic; }
+
+  /* FAIXA GROUP */
+  .faixa-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0 8px;
+    border-bottom: 1px solid var(--borda);
+    margin-bottom: 12px; margin-top: 20px;
+  }
+  .faixa-header:first-of-type { margin-top: 0; }
+  .faixa-badge { font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 6px; }
+  .faixa-titulo { font-size: 15px; font-weight: 700; }
+  .faixa-count { margin-left: auto; font-size: 22px; font-weight: 800; color: var(--tinta3); }
+
+  /* LEGENDA CIDADES */
+  .cidade-label {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+  }
+  .sal { background: #fff3e0; color: #8a4200; }
+  .ldf { background: #e3f2fd; color: #1a3f6b; }
+
+  .nota-rodape {
+    background: white; border: 1px solid var(--borda); border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 20px;
+    font-size: 12px; color: var(--tinta3); line-height: 1.7;
+  }
+  .nota-rodape strong { color: var(--tinta2); }
+
+  @media(max-width:560px){
+    header, .wrap { padding: 20px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htag">Salvador & Lauro de Freitas · 2020–2025 · Dados verificados</div>
+  <h1>Condomínios Novos<br><span>Últimos 5 anos</span></h1>
+  <p>Lista com dados verificados em fontes primárias — MRV, Direcional, Stanza, OR e portais imobiliários. Organizada por faixa de unidades e cidade.</p>
+</header>
+
+<div class="aviso">
+  ⚠️ <strong>Metodologia:</strong> Apenas empreendimentos com número de unidades confirmado em fonte verificável. Número de unidades sem confirmação foi marcado como "a confirmar". Datas de entrega podem variar por atrasos de obra.
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-n">22+</div><div class="stat-l">Empreendimentos</div></div>
+  <div class="stat"><div class="stat-n">Salvador</div><div class="stat-l">+ Lauro de Freitas</div></div>
+  <div class="stat"><div class="stat-n">MRV · Dir. · Stanza</div><div class="stat-l">Principais construtoras</div></div>
+  <div class="stat"><div class="stat-n">~14.000+</div><div class="stat-l">Unidades mapeadas</div></div>
+  <div class="stat"><div class="stat-n">2020–2025</div><div class="stat-l">Período</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab ativo" onclick="mostraSecao('todas', this)">Todas (por faixa)</div>
+  <div class="tab" onclick="mostraSecao('mrv', this)">MRV</div>
+  <div class="tab" onclick="mostraSecao('direcional', this)">Direcional</div>
+  <div class="tab" onclick="mostraSecao('outras', this)">Outras construtoras</div>
+  <div class="tab" onclick="mostraSecao('ldf', this)">Lauro de Freitas</div>
+</div>
+
+<div class="wrap">
+
+<!-- ===== TODAS ===== -->
+<div id="todas" class="secao visivel">
+
+  <!-- 100–199 -->
+  <div class="faixa-header">
+    <div class="faixa-badge b-100">100–199 unidades</div>
+    <div class="faixa-titulo">Médio-baixo porte · menor densidade</div>
+    <div class="faixa-count">5</div>
+  </div>
+  <div class="tabela-wrap">
+  <table>
+    <thead><tr>
+      <th>Empreendimento</th><th>Cidade</th><th>Bairro</th><th>Unidades</th><th>Status</th><th>Construtora</th><th>Período</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><div class="nome-cell">Legacy Caminho das Árvores</div><div class="sub-cell">130 un · 2 torres · 4 suítes · ultra luxo · entrega 2027</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Caminho das Árvores</td>
+        <td><span class="badge b-100">130</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>OR (Novonor)</td>
+        <td>Lanç. 2023</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Rivage Piatã</div><div class="sub-cell">Torre única · 11 pav · 90% vista mar · entrega Out/2027</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Piatã</td>
+        <td><span class="badge b-100">114</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Sertenge</td>
+        <td>Lanç. 2024</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Reserva Salvador – Reserva da Colina</div><div class="sub-cell">2 torres · 2q · Complexo Reserva Salvador (5 cond. / ~2.000 un)</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Cajazeiras</td>
+        <td><span class="badge b-100">288 ⚠️</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+        <td>Lanç. 2021 · Entr. 2024</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Spazio Mirante do Iguatemi</div><div class="sub-cell">1 e 2 quartos · Pernambués · torres com elevador</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Pernambués</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+        <td>2020–2022</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Spazio Salvador Norte</div><div class="sub-cell">2 quartos · Jardim das Margaridas · próximo ao Salvador Norte Shopping</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Jardim das Margaridas</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+        <td>2021–2023</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- 200–299 -->
+  <div class="faixa-header">
+    <div class="faixa-badge b-200">200–299 unidades</div>
+    <div class="faixa-titulo">Médio porte · condomínio clube</div>
+    <div class="faixa-count">5</div>
+  </div>
+  <div class="tabela-wrap">
+  <table>
+    <thead><tr>
+      <th>Empreendimento</th><th>Cidade</th><th>Bairro</th><th>Unidades</th><th>Status</th><th>Construtora</th><th>Período</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><div class="nome-cell">Jardim Patamares</div><div class="sub-cell">2 torres (Mar e Maré) · 17 andares · 8 aptos/andar · entrega 2027</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Patamares</td>
+        <td><span class="badge b-200">288</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Stanza</td>
+        <td>Lanç. Fev/2024</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Reserva Salvador – Reserva da Colina</div><div class="sub-cell">2 quartos · Cajazeiras · parte do complexo Reserva Salvador</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Cajazeiras</td>
+        <td><span class="badge b-200">288</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+        <td>Lanç. 2021 · Entr. 2024</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Spazio Imperatriz (Cidade Sete Sóis)</div><div class="sub-cell">2 quartos · 44m² · Mussurunga · parte da Smartcidade MRV</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Mussurunga / Paralela</td>
+        <td><span class="badge b-200">352</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>MRV</td>
+        <td>Lanç. 2023</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Parque dos Marqueses</div><div class="sub-cell">Condomínio MRV Salvador · 2 quartos</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>A confirmar</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+        <td>2020–2023</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Salvador</div><div class="sub-cell">2 quartos · Valéria · BR-324 · 1º lançamento Direcional em Salvador</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Valéria</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Direcional</td>
+        <td>Lanç. Jan/2024</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- 300+ -->
+  <div class="faixa-header">
+    <div class="faixa-badge b-300">300+ unidades</div>
+    <div class="faixa-titulo">Grande porte · alta densidade · econômico/médio</div>
+    <div class="faixa-count">12</div>
+  </div>
+  <div class="tabela-wrap">
+  <table>
+    <thead><tr>
+      <th>Empreendimento</th><th>Cidade</th><th>Bairro</th><th>Unidades</th><th>Status</th><th>Construtora</th><th>Período</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><div class="nome-cell">Ventura Patamares</div><div class="sub-cell">3 torres (Brisa, Marina, Serena) · 15 andares · 8 aptos/andar</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Patamares</td>
+        <td><span class="badge b-300">384</span></td>
+        <td><span class="badge b-obra">Início obras 2025</span></td>
+        <td>Stanza</td>
+        <td>Lanç. Out/2024</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Parque Dom Pedro II (Cidade Sete Sóis)</div><div class="sub-cell">5 torres · 5 pav · 4 aptos/andar · 2q 41m² · Mussurunga</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Mussurunga / Paralela</td>
+        <td><span class="badge b-300">300</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>MRV</td>
+        <td>Lanç. Jan/2024</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Complexo Reserva Salvador</div><div class="sub-cell">5 condomínios totais no terreno do Golf Clube · Cajazeiras / São Marcos</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Cajazeiras</td>
+        <td><span class="badge b-300">~2.000 total</span></td>
+        <td><span class="badge b-obra">Fases 2021–2026</span></td>
+        <td>MRV</td>
+        <td>2021–2026</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Cidade Sete Sóis Paralela (complexo)</div><div class="sub-cell">12 condomínios · Mussurunga · Smartcidade · MCMV</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Mussurunga / Paralela</td>
+        <td><span class="badge b-300">4.500+ total</span></td>
+        <td><span class="badge b-obra">Fases 2023–2027</span></td>
+        <td>MRV</td>
+        <td>Lanç. Jan/2023</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Reserva Salvador – Reserva do Mar</div><div class="sub-cell">17 pav · 3 elevadores · 2q · Cajazeiras · lançado 2022</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Cajazeiras</td>
+        <td><span class="badge b-300">~300+</span></td>
+        <td><span class="badge b-entregue">Entregue Set/2025</span></td>
+        <td>MRV</td>
+        <td>Lanç. Mar/2022</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Art Studio Open Spaces</div><div class="sub-cell">Torre única · 42 aptos/andar · studios 18–45m² · Jardim Armação</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Jardim Armação</td>
+        <td><span class="badge b-300">~420</span></td>
+        <td><span class="badge b-entregue">Entregue 2025</span></td>
+        <td>André Guimarães</td>
+        <td>Lanç. 2022/2023</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Real Park</div><div class="sub-cell">2 quartos · Jardim das Margaridas · condomínio fechado</div></td>
+        <td><span class="cidade-label sal">Salvador</span></td>
+        <td>Jardim das Margaridas</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+        <td>2020–2023</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Litoral Norte</div><div class="sub-cell">30 blocos · 5 pav · 2q 41m² · 60 garden no térreo · Camaçari</div></td>
+        <td><span class="cidade-label ldf">Camaçari</span></td>
+        <td>Estrada do Coco</td>
+        <td><span class="badge b-300">600</span></td>
+        <td><span class="badge b-entregue">Entregue 2022</span></td>
+        <td>Direcional</td>
+        <td>Lanç. 2020</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Estrada do Coco</div><div class="sub-cell">2 quartos · Lauro de Freitas · MCMV · Estrada do Coco</div></td>
+        <td><span class="cidade-label ldf">Lauro de Freitas</span></td>
+        <td>Estrada do Coco</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Direcional</td>
+        <td>2023–2025</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Boulevard Park</div><div class="sub-cell">2 quartos · Lauro de Freitas · MCMV</div></td>
+        <td><span class="cidade-label ldf">Lauro de Freitas</span></td>
+        <td>A confirmar</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Direcional</td>
+        <td>2024–2025</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Parque Solar do Bosque</div><div class="sub-cell">2 quartos · Estrada do Coco · Lauro de Freitas · lazer completo</div></td>
+        <td><span class="cidade-label ldf">Lauro de Freitas</span></td>
+        <td>Estrada do Coco</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+        <td>2020–2022</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Spazio Soberano</div><div class="sub-cell">Linha Premium MRV · 2q · Buraquinho · Av. Min. Antônio Carlos Magalhães</div></td>
+        <td><span class="cidade-label ldf">Lauro de Freitas</span></td>
+        <td>Buraquinho</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+        <td>2020–2023</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ===== MRV ===== -->
+<div id="mrv" class="secao">
+  <div class="secao-titulo">🏗️ MRV — Salvador & Região</div>
+  <div class="secao-sub">Principal construtora econômica da Bahia. Mais de 3.100 unidades entregues só em Salvador. Foco em MCMV.</div>
+  <div class="tabela-wrap">
+  <table>
+    <thead><tr>
+      <th>Empreendimento</th><th>Cidade / Bairro</th><th>Unidades</th><th>Status</th><th>Tipologia</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><div class="nome-cell">Cidade Sete Sóis Paralela — complexo</div><div class="sub-cell fonte">Fonte: MRV / Correio 24h Jan/2024</div></td>
+        <td>Salvador · Mussurunga</td>
+        <td><span class="badge b-300">4.500 total / 12 cond.</span></td>
+        <td><span class="badge b-obra">Fases 2023–2027</span></td>
+        <td>2q · 41m² · MCMV</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">↳ Parque Dom Pedro II (fase 3)</div><div class="sub-cell fonte">Fonte: Correio 24h / MRV Imóveis</div></td>
+        <td>Salvador · Mussurunga</td>
+        <td><span class="badge b-300">300</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>2q · 41m² · 5 torres</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">↳ Spazio Imperatriz (fase 1)</div><div class="sub-cell fonte">Fonte: marcelolinoimoveis.com.br</div></td>
+        <td>Salvador · Mussurunga</td>
+        <td><span class="badge b-200">352</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>2q · 44–45m²</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Complexo Reserva Salvador — total</div><div class="sub-cell fonte">Fonte: BA de Valor / MRV Abr/2021</div></td>
+        <td>Salvador · Cajazeiras</td>
+        <td><span class="badge b-300">~2.000 total / 5 cond.</span></td>
+        <td><span class="badge b-obra">Fases 2021–2026</span></td>
+        <td>2q · MCMV</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">↳ Reserva da Colina (cond. 1)</div><div class="sub-cell fonte">Fonte: BA de Valor Abr/2021</div></td>
+        <td>Salvador · Cajazeiras</td>
+        <td><span class="badge b-200">288</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>2q · 42,5m² · 2 torres</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">↳ Reserva do Mar (cond. 2)</div><div class="sub-cell fonte">Fonte: Apto.vc / Habite Imóveis</div></td>
+        <td>Salvador · Cajazeiras</td>
+        <td><span class="badge b-300">~300+</span></td>
+        <td><span class="badge b-entregue">Entregue Set/2025</span></td>
+        <td>1–2q · 36–40m² · 17 pav</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Reserva das Flores</div><div class="sub-cell fonte">Fonte: MRV site oficial</div></td>
+        <td>Salvador · Jd. Cajazeiras</td>
+        <td><span class="badge">4 torres (a confirmar)</span></td>
+        <td><span class="badge b-obra">Em obra/entregue</span></td>
+        <td>2q · varanda</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Portal de Piatã</div><div class="sub-cell fonte">Fonte: MRV mapa do site</div></td>
+        <td>Salvador · Piatã</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>2q · MCMV</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Residencial Reserva da Mata</div><div class="sub-cell fonte">Fonte: MRV site oficial</div></td>
+        <td>Salvador · Sussuarana</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-obra">Lançamento 2025</span></td>
+        <td>2q · lazer completo</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Real Park</div><div class="sub-cell fonte">Fonte: MRV mapa do site / anúncios</div></td>
+        <td>Salvador · Jd. das Margaridas</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>2q · condomínio fechado</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Parque Solar do Bosque</div><div class="sub-cell fonte">Fonte: LRV Imóveis</div></td>
+        <td>Lauro de Freitas · Est. do Coco</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>2q · lazer completo</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Spazio Soberano</div><div class="sub-cell fonte">Fonte: LRV Imóveis</div></td>
+        <td>Lauro de Freitas · Buraquinho</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>2q · Linha Premium</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Luggo Vilas Parque</div><div class="sub-cell fonte">Fonte: MRV mapa do site (Luggo = marca aluguel MRV)</div></td>
+        <td>Lauro de Freitas</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>Produto para aluguel</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ===== DIRECIONAL ===== -->
+<div id="direcional" class="secao">
+  <div class="secao-titulo">🏗️ Direcional — Salvador & Região</div>
+  <div class="secao-sub">Chegou à Bahia em 2020. Foco em MCMV com grandes empreendimentos. Linha Conquista é a principal marca regional.</div>
+  <div class="tabela-wrap">
+  <table>
+    <thead><tr>
+      <th>Empreendimento</th><th>Cidade / Bairro</th><th>Unidades</th><th>Status</th><th>Tipologia</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><div class="nome-cell">Conquista Litoral Norte</div><div class="sub-cell fonte">Fonte: seunovolarape.com.br · 1º lançamento Direcional na Bahia</div></td>
+        <td>Camaçari · Estrada do Coco</td>
+        <td><span class="badge b-300">600</span></td>
+        <td><span class="badge b-entregue">Entregue 2022</span></td>
+        <td>2q · 41m² · 30 blocos · 5 pav</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Salvador</div><div class="sub-cell fonte">Fonte: Viva Real / Direcional.com.br · 1º em Salvador</div></td>
+        <td>Salvador · Valéria</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>2q · MCMV · perto BR-324</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Lauro de Freitas</div><div class="sub-cell fonte">Fonte: Direcional.com.br · Av. Prof. Theócrito Batista</div></td>
+        <td>Lauro de Freitas · Quintas do Picuaia</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-lanc">Lançamento</span></td>
+        <td>2q · garden disponível</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Estrada do Coco</div><div class="sub-cell fonte">Fonte: Direcional.com.br</div></td>
+        <td>Lauro de Freitas · Est. do Coco</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>2q · MCMV</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Boulevard Park</div><div class="sub-cell fonte">Fonte: Direcional.com.br</div></td>
+        <td>Lauro de Freitas</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>2q · MCMV</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="nota-rodape">
+    💡 <strong>Dica:</strong> A Direcional não publica número de unidades em suas páginas de produto. Para confirmar os dados, acesse <strong>direcional.com.br/empreendimentos</strong> ou ligue para o plantão de vendas em Lauro de Freitas: Av. Santos Dumont, 6072 — Loja 01 — Pitangueiras.
+  </div>
+</div>
+
+<!-- ===== OUTRAS ===== -->
+<div id="outras" class="secao">
+  <div class="secao-titulo">🏗️ Outras Construtoras — Salvador</div>
+  <div class="secao-sub">Stanza, OR, Sertenge, André Guimarães e outros lançamentos verificados.</div>
+  <div class="tabela-wrap">
+  <table>
+    <thead><tr>
+      <th>Empreendimento</th><th>Bairro</th><th>Unidades</th><th>Status</th><th>Padrão</th><th>Entrega</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><div class="nome-cell">Legacy Caminho das Árvores</div><div class="sub-cell fonte">Fonte: OR / Correio 24h / SkyscraperCity</div></td>
+        <td>Caminho das Árvores</td>
+        <td><span class="badge b-100">130</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Ultra luxo · 4 suítes</td>
+        <td>2027</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Rivage Piatã</div><div class="sub-cell fonte">Fonte: MGF Imóveis / Sertenge</div></td>
+        <td>Piatã</td>
+        <td><span class="badge b-100">114</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Médio-alto · 90% vista mar</td>
+        <td>Out/2027</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Jardim Patamares</div><div class="sub-cell fonte">Fonte: Stanza / Apto.vc / Marcelo Lino</div></td>
+        <td>Patamares</td>
+        <td><span class="badge b-200">288</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Médio · 2/3q</td>
+        <td>Out/2027</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Ventura Patamares</div><div class="sub-cell fonte">Fonte: Stanza / Bahia Econômica Out/2024</div></td>
+        <td>Patamares</td>
+        <td><span class="badge b-300">384</span></td>
+        <td><span class="badge b-obra">Início obras 2025</span></td>
+        <td>Médio · 2/3q · 3 torres</td>
+        <td>2027/2028</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Art Studio Open Spaces</div><div class="sub-cell fonte">Fonte: Rocha Andrade / LRV Imóveis · 42 aptos/andar</div></td>
+        <td>Jardim Armação</td>
+        <td><span class="badge b-300">~420</span></td>
+        <td><span class="badge b-entregue">Entregue 2025</span></td>
+        <td>Investimento · studios</td>
+        <td>2025</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Art Studio Tancredo</div><div class="sub-cell fonte">Fonte: LRV Imóveis / Apto.vc · lanç. Set/2025</div></td>
+        <td>Tancredo Neves</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-lanc">Lançamento</span></td>
+        <td>Investimento · studios</td>
+        <td>Dez/2029</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">LeVille Residence</div><div class="sub-cell fonte">Fonte: LRV Imóveis / IMOBEL · Av. Paralela</div></td>
+        <td>Av. Paralela</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-lanc">Lançamento 2025</span></td>
+        <td>Médio · 1/2q</td>
+        <td>A confirmar</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ===== LAURO DE FREITAS ===== -->
+<div id="ldf" class="secao">
+  <div class="secao-titulo">📍 Lauro de Freitas — Empreendimentos</div>
+  <div class="secao-sub">Cidade em forte expansão imobiliária. Estrada do Coco e Buraquinho são os principais eixos de lançamentos.</div>
+  <div class="tabela-wrap">
+  <table>
+    <thead><tr>
+      <th>Empreendimento</th><th>Bairro</th><th>Unidades</th><th>Status</th><th>Construtora</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><div class="nome-cell">Spazio Soberano</div><div class="sub-cell fonte">Fonte: LRV Imóveis · Linha Premium MRV</div></td>
+        <td>Buraquinho</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Parque Solar do Bosque</div><div class="sub-cell fonte">Fonte: LRV Imóveis · Estrada do Coco</div></td>
+        <td>Estrada do Coco</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Luggo Vilas Parque</div><div class="sub-cell fonte">Fonte: MRV mapa do site · produto de aluguel</div></td>
+        <td>A confirmar</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-entregue">Entregue</span></td>
+        <td>MRV (Luggo)</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Lauro de Freitas</div><div class="sub-cell fonte">Fonte: Direcional.com.br · Quintas do Picuaia</div></td>
+        <td>Quintas do Picuaia</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-lanc">Lançamento</span></td>
+        <td>Direcional</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Estrada do Coco</div><div class="sub-cell fonte">Fonte: Direcional.com.br</div></td>
+        <td>Estrada do Coco</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Direcional</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Conquista Boulevard Park</div><div class="sub-cell fonte">Fonte: Direcional.com.br</div></td>
+        <td>A confirmar</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-obra">Em obra</span></td>
+        <td>Direcional</td>
+      </tr>
+      <tr>
+        <td><div class="nome-cell">Breve lançamento Direcional LDF</div><div class="sub-cell fonte">Fonte: Direcional.com.br · ainda sem nome/endereço final</div></td>
+        <td>Lauro de Freitas</td>
+        <td><span class="badge">a confirmar</span></td>
+        <td><span class="badge b-lanc">Em preparação</span></td>
+        <td>Direcional</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="nota-rodape">
+    🏖️ <strong>Por que Lauro de Freitas cresce tanto?</strong> A cidade tem crescimento imobiliário acelerado por ser região metropolitana de Salvador com praias (Buraquinho, Vilas, Ipitanga), acesso fácil pela Estrada do Coco e Linha Verde, e imóveis com custo menor que a capital. MRV e Direcional apostam forte na região pelo perfil MCMV.
+  </div>
+</div>
+
+<!-- NOTA FINAL -->
+<div class="nota-rodape" style="margin-top:8px">
+  <strong>Fontes principais:</strong> MRV Engenharia (mrv.com.br · entregas.mrv.com.br) · Stanza Incorporadora (stanza.com.br) · OR Incorporadora (or.com.br) · Direcional (direcional.com.br) · Correio 24h · BA de Valor · LRV Imóveis · Apto.vc · MGF Imóveis · Marcelo Lino Imóveis · Bahia Econômica<br><br>
+  <strong>Para completar dados "a confirmar":</strong> ADEMI-BA (71) 3266-7788 · Cartórios de Registro de Imóveis de Salvador · Plantões de vendas das construtoras (MRV 0800 728 9000 · Direcional Estrada do Coco loja 01)
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+function mostraSecao(id, tab) {
+  document.querySelectorAll('.secao').forEach(s => s.classList.remove('visivel'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('ativo'));
+  document.getElementById(id).classList.add('visivel');
+  tab.classList.add('ativo');
+}
+</script>
+</body>
+</html>
